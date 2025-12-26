@@ -24,11 +24,12 @@ g.setAttribute('fill', '#000');
 g.setAttribute('stroke', 'none');
 
 const path_T = document.createElementNS(SVG_NS, "path");
-const d = `
+/* const d = `
   M140 290
   c-6 -16 -11 -65 -11 -109 0 -110 -7 -120 -75 -113 -49 5 -53 4 -45 -12 22 -40 42 -46 170 -52 69 -3 127 -4 129 -3 2 1 -1 11 -7 22 -10 19 -47 38 -86 44 -18 3 -21 16 -31 116 -11 121 -26 155 -44 107
   z
-`;
+`; */
+const d = `M 50 50 C 50 250 250 50 250 250 `;
 path_T.setAttribute("d", d);
 
 g.appendChild(path_T);
