@@ -13,6 +13,11 @@ html, body {
   height: 100%;
 }
 
+#container svg {
+  border-radius: 8px;
+  box-shadow: 0.3em 0.3em 1em rgb(200 0 0 / 60%);
+}
+
 #container .num-round {
   position: fixed;
   left: 0;
@@ -21,4 +26,13 @@ html, body {
   height: 26px;
   box-sizing: border-box;
   border: 1px solid rgba(255, 0, 0, 0.3);
+}
+#container .t-round {
+  position: fixed;
+  left: 75px;
+  top: 128px;
+  width: 40px;
+  height: 80px;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 255, 0, 0.3);
 }
