@@ -1,698 +1,3 @@
-/*
-const WW = window.innerWidth;
-const WH = window.innerHeight;
-// console.log("window width : ", WW);
-// console.log("window height : ", WH);
-
-
-const DIV = document.createElement("div");
-DIV.setAttribute("id", "container");
-document.body.appendChild(DIV);
-
-const container = document.getElementById("container");
-
-
-const cardSize = { w: 191, h: 297 };
-const numScale = { w: 1, h: 1 }; // number size 비율 -> 18 : 26
-const tScale = { w: 1, h: 1 };
-
-// number round =============================
-// const numRndEl = document.createElement("div");
-// numRndEl.classList.add("num-round");
-// container.appendChild(numRndEl);
-// T round =============================
-// const tRndEl = document.createElement("div");
-// tRndEl.classList.add("t-round");
-// container.appendChild(tRndEl);
-
-// SVG ======================================
-const SVG_NS = "http://www.w3.org/2000/svg";
-const svg = document.createElementNS(SVG_NS, "svg");
-svg.classList.add("card");
-svg.setAttribute("width", cardSize.w);
-svg.setAttribute("height", cardSize.h);
-svg.setAttribute('viewBox', `0 0 ${cardSize.w} ${cardSize.h}`);
-// svg.setAttribute('preserveAspectRatio', "xMidYMid meet");
-
-const g = document.createElementNS(SVG_NS, "g");
-g.setAttribute('transform', `translate(0,0) scale(${numScale.w},${numScale.h})`);
-// g.setAttribute('transform', `translate(0,0) scale(${numScale.w},${numScale.h}) rotate(180, 9, 13)`);
-const gr = document.createElementNS(SVG_NS, "g");
-// gr.setAttribute('transform', `translate(90,130) scale(${numScale.w},${numScale.h})`);
-gr.setAttribute('transform', `translate(0,0) scale(${numScale.w},${numScale.h})`);
-// g.setAttribute('fill', '#000');
-// g.setAttribute('stroke', 'none');
-
-const path_N = document.createElementNS(SVG_NS, "path");
-const path_NR = document.createElementNS(SVG_NS, "path");
-path_N.classList.add("n");
-path_NR.classList.add("nr");
-// path_N.setAttribute('fill', '#000');
-// path_N.setAttribute('stroke', 'none');
-path_NR.setAttribute('fill', '#FF0000');
-// path_NR.setAttribute('stroke', 'none');
-
-// number size 비율 -> 18 : 26
-// NUM 1 - 1은 180도 회전해도 1
-const dN1 = `
-  M0,0
-  m0,4
-  l2,-4
-  l0,22
-  l-2,4
-  Z
-`;
-// NUM 2 - 2는 180도 회전해도 2
-const dN2 = `
-  M0,0
-  m0,2
-  l4,-2
-  l14,0
-  l-14,24
-  l14,0
-  l-4,2
-  l-14,0
-  l14,-24
-  Z
-`;
-// NUM 3
-const dN3 = `
-  M0,0
-  m0,2
-  l4,-2
-  l14,0
-  l-12.4,12
-  l12.4,0
-  l-14.4,14
-  l-3.6,0
-  l12.4,-12
-  l-12.4,0
-  l12.4,-12
-  Z
-`;
-const dN3R = `
-  M0,0
-  m14.4,0
-  l3.6,0
-  l-12.4,12
-  l12.4,0
-  l-12.4,12
-  l12.4,0
-  l-4,2
-  l-14,0
-  l12.4,-12
-  l-12.4,0
-  Z
-`;
-// NUM 4
-const dN4 = `
-  M0,0
-  m0,14
-  l2,-4
-  l0,11
-  l14,-15
-  l0,-2
-  l2,-4
-  l0,22
-  l-2,4
-  l0,-17
-  l-16,17
-  Z
-`;
-const dN4R = `
-  M0,0
-  m0,4
-  l2,-4
-  l0,17
-  l16,-17
-  l0,12
-  l-2,4
-  l0,-11
-  l-14,15
-  l0,2
-  l-2,4
-  Z
-`;
-// NUM 5 - 5는 180도 회전해도 5
-// 108 : 156
-const dN5 = `
-  M0,0
-  m0,8
-  l8,-8
-  l2.5,0
-  l-8.5,8.5
-  l0,10.3
-  l16,-16
-  l0,15.2
-  l-8,8
-  l-2.5,0
-  l8.5,-8.5
-  l0,-10.3
-  l-16,16
-  Z
-`;
-// NUM 6 - 6을 180도 회전하면 9와 같음
-// 90 : 130
-const dN6 = `
-  M0,0
-  m0,8
-  l8,-8
-  l2.5,0
-  l-8.5,8.5
-  l0,10.3
-  l16,-16
-  l0,15.2
-  l-8,8
-  l-10,0
-  l0,-2.8
-  l2,-2
-  l0,2.8
-  l7.5,0
-  l6.5,-6.5
-  l0,-10.3
-  l-16,16
-  Z
-`;
-const dN6R = `
-  M0,0
-  m0,8
-  l8,-8
-  l10,0
-  l0,2.8
-  l-2,2
-  l0,-2.8
-  l-7.5,0
-  l-6.5,6.5
-  l0,10.3
-  l16,-16
-  l0,15.2
-  l-8,8
-  l-2.5,0
-  l8.5,-8.5
-  l0,-10.3
-  l-16,16
-  Z
-`;
-// NUM 7
-const dN7 = `
-  M0,0
-  m0,2
-  l4,-2
-  l14,0
-  l-15.5,26
-  l-2.5,0
-  l14,-24
-  Z
-`;
-const dN7R = `
-  M0,0
-  m15.5,0
-  l2.5,0
-  l-14,24
-  l14,0
-  l-4,2
-  l-14,0
-  Z
-`;
-// NUM 8 - 8은 180도 회전해도 8
-const dN8 = `
-  M0,0
-  m0,8
-  l8,-8
-  l10,0
-  l0,2.8
-  l-2,2
-  l0,-2.8
-  l-7.5,0
-  l-6.5,6.5
-  l0,10.3
-  l16,-16
-  l0,15.2
-  l-8,8
-  l-10,0
-  l0,-2.8
-  l2,-2
-  l0,2.8
-  l7.5,0
-  l6.5,-6.5
-  l0,-10.3
-  l-16,16
-  Z
-`;
-// NUM 9 - 9를 180도 회전하면 6과 같음
-const dN9 = `
-  M0,0
-  m0,8
-  l8,-8
-  l10,0
-  l0,2.8
-  l-2,2
-  l0,-2.8
-  l-7.5,0
-  l-6.5,6.5
-  l0,10.3
-  l16,-16
-  l0,15.2
-  l-8,8
-  l-2.5,0
-  l8.5,-8.5
-  l0,-10.3
-  l-16,16
-  Z
-`;
-const dN9R = `
-  M0,0
-  m0,8
-  l8,-8
-  l2.5,0
-  l-8.5,8.5
-  l0,10.3
-  l16,-16
-  l0,15.2
-  l-8,8
-  l-10,0
-  l0,-2.8
-  l2,-2
-  l0,2.8
-  l7.5,0
-  l6.5,-6.5
-  l0,-10.3
-  l-16,16
-  Z
-`;
-// NUM 1
-const dN10 = `
-  M0,0
-  m0,4
-  l2,-4
-  l0,22
-  l-2,4
-  l0,-22
-  Z
-  m6,0
-  l2,-4
-  l10,0
-  l0,22
-  l-2,4
-  l-10,0
-  l2,-2
-  l7,0
-  l1,-2
-  l0,-20
-  l-7,0
-  l-1,2
-  l0,20
-  l-2,2
-  Z
-`;
-const dN10R = `
-  M0,0
-  m0,4
-  l2,-4
-  l10,0
-  l0,22
-  l-2,4
-  l-10,0
-  l2,-2
-  l7,0
-  l1,-2
-  l0,-20
-  l-7,0
-  l-1,2
-  l0,20
-  l-2,2
-  l0,-22
-  Z
-  m16,0
-  l2,-4
-  l0,22
-  l-2,4
-  l0,-22
-  Z
-`;
-
-path_N.setAttribute("d", dN9
-  .trim() // 앞뒤 공백 제거
-  .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
-);
-path_NR.setAttribute("d", dN9R
-  .trim() // 앞뒤 공백 제거
-  .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
-);
-g.appendChild(path_N);
-gr.appendChild(path_NR);
-svg.appendChild(g);
-svg.appendChild(gr);
-// svg.appendChild(path_N);
-// svg.appendChild(path_NR);
-
-// PATH T ===================================
-const gt = document.createElementNS(SVG_NS, "g");
-gt.setAttribute('transform', `translate(0,0) scale(${tScale.w},${tScale.h})`);
-// gt.setAttribute('transform', `translate(0,0) scale(${tScale.w},${tScale.h}) rotate(180, 95.5, 148.5)`);
-const gtr = document.createElementNS(SVG_NS, "g");
-gtr.setAttribute('transform', `translate(0,0) scale(${tScale.w},${tScale.h})`);
-
-const path_T = document.createElementNS(SVG_NS, "path"); // width: 64, height: 64
-path_T.classList.add("t");
-// path_T.setAttribute('fill', '#000');
-// path_T.setAttribute('stroke', 'none');
-const path_TR = document.createElementNS(SVG_NS, "path"); // width: 64, height: 64
-path_TR.classList.add("t_r");
-path_TR.setAttribute('fill', '#FF0000');
-// const dT = `
-//   M0,0
-//   l16,2 
-//   l30,0 
-//   l14,12 
-//   l-14,-2 
-//   l-10,0 
-//   l0,52 
-//   l-10,-12 
-//   l0,-40 
-//   l-10,0 
-//   Z
-// `;
-const dT = `
-  M0,0
-  m0,0
-  l10,2 
-  l20,0 
-  l10,8 
-  l-10,-2 
-  l-6,0 
-  l0,32 
-  l-6,-8 
-  l0,-24 
-  l-10,0 
-  Z
-`;
-const dTR = `
-  M0,50
-  m16,0
-  l6,8
-  l0,24
-  l10,0
-  l8,8
-  l-10,-2
-  l-20,0
-  l-10,-8
-  l10,2
-  l6,0
-  Z
-`;
-path_T.setAttribute("d", dT
-  .trim() // 앞뒤 공백 제거
-  .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
-);
-path_TR.setAttribute("d", dTR
-  .trim() // 앞뒤 공백 제거
-  .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
-);
-
-// gt.appendChild(path_T);
-// gtr.appendChild(path_TR);
-// svg.appendChild(gt);
-// svg.appendChild(gtr);
-svg.appendChild(path_T);
-svg.appendChild(path_TR);
-// svg.appendChild(path_T.cloneNode(true));
-
-container.appendChild(svg);
-
-// SIZE CHECK ===============================
-// SVG
-function svgTransformT() {
-  const svgEl = document.querySelector('svg');
-  if (!svgEl) return;
-  const w = svgEl.getAttribute('width');
-  const h = svgEl.getAttribute('height');
-  // console.log("CARD width :", w);
-  // console.log("CARD height :", h);
-  const rect = svgEl.getBoundingClientRect();
-  // console.log("CARD width :", rect.width);
-  // console.log("CARD height :", rect.height);
-
-  // path
-  const path = document.querySelector('svg.card path.t');
-  if (!path) return;
-  const pathR = document.querySelector('svg.card path.t_r');
-  if (!pathR) return;
-
-  const bbox = path.getBBox();
-  // console.log(bbox.x);      // 시작 x
-  // console.log(bbox.y);      // 시작 y
-  // console.log(bbox.width);  // path width
-  // console.log(bbox.height); // path height
-  
-  // path의 "M" 좌표 변경
-  const posX_T = Math.floor(rect.width / 2 - bbox.width / 2);
-  const posY_T = Math.floor(rect.height / 2 - bbox.height / 2);
-
-  const oldD = path.getAttribute('d');
-  // const newD = oldD.replace('M0,0', `M${posX_T},${posY_T}`);
-  const newD = oldD.replace(
-    /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
-    `M${posX_T},${posY_T}`
-  );
-  path.setAttribute('d', newD);
-  
-  const posX_TR = Math.floor(rect.width / 2 - bbox.width / 2);
-  const posY_TR = Math.floor(rect.height / 2 - bbox.height / 2);
-  const oldDr = pathR.getAttribute('d');
-  // const newDr = oldD.replace('M0,0', `M${posX_TR},${posY_TR}`);
-  const newDr = oldDr.replace(
-    /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
-    `M${posX_TR},${posY_TR + bbox.height}`
-  );
-  pathR.setAttribute('d', newDr);
-}
-svgTransformT();
-
-function svgTransformNum() {
-  const svgEl = document.querySelector('svg');
-  if (!svgEl) return;
-  const w = svgEl.getAttribute('width');
-  const h = svgEl.getAttribute('height');
-  const rect = svgEl.getBoundingClientRect();
-
-  // path
-  const path = document.querySelector('svg.card path.n');
-  if (!path) return;
-  const pathR = document.querySelector('svg.card path.nr');
-  if (!pathR) return;
-
-  const bbox = path.getBBox();
-  
-  // path의 "M" 좌표 변경
-  const posX_N = 10;
-  const posY_N = 10;
-  const oldD = path.getAttribute('d');
-  // const newD = oldD.replace('M0,0', `M${posX_N},${posY_N}`);
-  const newD = oldD.replace(
-    /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
-    `M${posX_N},${posY_N}`
-  );
-  path.setAttribute('d', newD);
-  
-  const posX_NR = Math.floor(rect.width - 10 - bbox.width);
-  const posY_NR = Math.floor(rect.height - 10 - bbox.height);
-  const oldDr = pathR.getAttribute('d');
-
-  console.log("rect.width : ", rect.width);
-  console.log("bbox.width : ", bbox.width);
-  console.log("posX_NR :::: ", posX_NR);
-
-  // const newDr = oldD.replace('M0,0', `M${posX_NR},${posY_NR}`);
-  const newDr = oldDr.replace(
-    /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
-    `M${posX_NR},${posY_NR}`
-  );
-  pathR.setAttribute('d', newDr);
-}
-svgTransformNum();
-
-// ————————————————————————————————————————————————————————————————————————
-// ————————————————————————————————————————————————————————————————————————
-// ————————————————————————————————————————————————————————————————————————
-
-const PUB_NUM_KEYS = [
-  'OEJNIHMKXT', // [79, 69, 74, 78, 73, 72, 77, 75, 88, 84]
-  'GIZFNPTSVK', // [71, 73, 90, 70, 78, 80, 84, 83, 86, 75]
-  'OCNLTGMFKS', // [79, 67, 78, 76, 84, 71, 77, 70, 75, 83]
-  'DKHOXMIVEA', // [68, 75, 72, 79, 88, 77, 73, 86, 69, 65]
-  'PDBIZUOFMJ', // [80, 68, 66, 73, 90, 85, 79, 70, 77, 74]
-  'KFOUDBRZVI', // [75, 70, 79, 85, 68, 66, 82, 90, 86, 73]
-  'MIPGSHDAUF', // [77, 73, 80, 71, 83, 72, 68, 65, 85, 70]
-  'SJRWTDGUXH', // [83, 74, 82, 87, 84, 68, 71, 85, 88, 72]
-  'HJZUTOXFQA', // [72, 74, 90, 85, 84, 79, 88, 70, 81, 65]
-  'JRPFIGSBDN', // [74, 82, 80, 70, 73, 71, 83, 66, 68, 78]
-];
-
-const DN = [
-  "M0,0 m0,4 l2,-4 l0,22 l-2,4 Z", // 1 - OEJNIHMKXT
-
-  "M0,0 m0,2 l4,-2 l14,0 l-14,24 l14,0 l-4,2 l-14,0 l14,-24 Z", // 2 - GIZFNPTSVK
-
-  "M0,0 m0,2 l4,-2 l14,0 l-12.4,12 l12.4,0 l-14.4,14 l-3.6,0 l12.4,-12 l-12.4,0 l12.4,-12 Z", // 3 - OCNLTGMFKS
-  "M0,0 m14.4,0 l3.6,0 l-12.4,12 l12.4,0 l-12.4,12 l12.4,0 l-4,2 l-14,0 l12.4,-12 l-12.4,0 Z", // 3 reverse
-
-  "M0,0 m0,14 l2,-4 l0,11 l14,-15 l0,-2 l2,-4 l0,22 l-2,4 l0,-17 l-16,17 Z", // 4 - DKHOXMIVEA
-  "M0,0 m0,4 l2,-4 l0,17 l16,-17 l0,12 l-2,4 l0,-11 l-14,15 l0,2 l-2,4 Z", // 4 reverse
-
-  "M0,0 m0,8 l8,-8 l2.5,0 l-8.5,8.5 l0,10.3 l16,-16 l0,15.2 l-8,8 l-2.5,0 l8.5,-8.5 l0,-10.3 l-16,16 Z", // 5 - PDBIZUOFMJ
-
-  "M0,0 m0,8 l8,-8 l2.5,0 l-8.5,8.5 l0,10.3 l16,-16 l0,15.2 l-8,8 l-10,0 l0,-2.8 l2,-2 l0,2.8 l7.5,0 l6.5,-6.5 l0,-10.3 l-16,16 Z", // 6 - KFOUDBRZVI
-  "M0,0 m0,8 l8,-8 l10,0 l0,2.8 l-2,2 l0,-2.8 l-7.5,0 l-6.5,6.5 l0,10.3 l16,-16 l0,15.2 l-8,8 l-2.5,0 l8.5,-8.5 l0,-10.3 l-16,16 Z", // 6 reverse
-
-  "M0,0 m0,2 l4,-2 l14,0 l-15.5,26 l-2.5,0 l14,-24 Z", // 7 - MIPGSHDAUF
-  "M0,0 m15.5,0 l2.5,0 l-14,24 l14,0 l-4,2 l-14,0 Z", // 7 reverse
-
-  "M0,0 m0,8 l8,-8 l10,0 l0,2.8 l-2,2 l0,-2.8 l-7.5,0 l-6.5,6.5 l0,10.3 l16,-16 l0,15.2 l-8,8 l-10,0 l0,-2.8 l2,-2 l0,2.8 l7.5,0 l6.5,-6.5 l0,-10.3 l-16,16 Z", // 8 - SJRWTDGUXH
-
-  "M0,0 m0,8 l8,-8 l10,0 l0,2.8 l-2,2 l0,-2.8 l-7.5,0 l-6.5,6.5 l0,10.3 l16,-16 l0,15.2 l-8,8 l-2.5,0 l8.5,-8.5 l0,-10.3 l-16,16 Z", // 9 - HJZUTOXFQA
-  "M0,0 m0,8 l8,-8 l2.5,0 l-8.5,8.5 l0,10.3 l16,-16 l0,15.2 l-8,8 l-10,0 l0,-2.8 l2,-2 l0,2.8 l7.5,0 l6.5,-6.5 l0,-10.3 l-16,16 Z", // 9 reverse
-
-  "M0,0 m0,4 l2,-4 l0,22 l-2,4 l0,-22 Z m6,0 l2,-4 l10,0 l0,22 l-2,4 l-10,0 l2,-2 l7,0 l1,-2 l0,-20 l-7,0 l-1,2 l0,20 l-2,2 Z", // 10 - JRPFIGSBDN
-  "M0,0 m0,4 l2,-4 l10,0 l0,22 l-2,4 l-10,0 l2,-2 l7,0 l1,-2 l0,-20 l-7,0 l-1,2 l0,20 l-2,2 l0,-22 Z m16,0 l2,-4 l0,22 l-2,4 l0,-22 Z", // 10 reverse
-];
-
-function randomNum(_code) {
-  return [[0,0], [0,4], [2,-4], [0,22], [-2,4]];
-}
-
-const DP = [
-  "M0,0 m0,0 l10,2 l20,0 l10,8 l-10,-2 l-6,0 l0,32 l-6,-8 l0,-24 l-10,0 Z", // T
-  "M0,50 m16,0 l6,8 l0,24 l10,0 l8,8 l-10,-2 l-20,0 l-10,-8 l10,2 l6,0 Z", // T reverse
-];
-
-// ————————————————————————————————————————————————————————————————————————
-// ————————————————————————————————————————————————————————————————————————
-// ————————————————————————————————————————————————————————————————————————
-
-
-
-// ================================
-// 2px 외곽(테두리 영역) path 만들기
-// ================================
-
-function polygonArea(points) {
-  // signed area * 2
-  let a = 0;
-  for (let i = 0; i < points.length; i++) {
-    const p = points[i];
-    const q = points[(i + 1) % points.length];
-    a += p.x * q.y - q.x * p.y;
-  }
-  return a / 2;
-}
-
-function normalize(vx, vy) {
-  const len = Math.hypot(vx, vy);
-  if (len === 0) return { x: 0, y: 0 };
-  return { x: vx / len, y: vy / len };
-}
-
-function lineIntersection(a1, a2, b1, b2) {
-  // a1->a2 and b1->b2 intersection (infinite lines)
-  const x1 = a1.x, y1 = a1.y;
-  const x2 = a2.x, y2 = a2.y;
-  const x3 = b1.x, y3 = b1.y;
-  const x4 = b2.x, y4 = b2.y;
-
-  const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-  if (Math.abs(den) < 1e-12) {
-    // 평행/거의 평행: fallback으로 a2를 반환(삼각형에서는 거의 안 생김)
-    return { x: x2, y: y2 };
-  }
-
-  const px =
-    ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / den;
-  const py =
-    ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / den;
-
-  return { x: px, y: py };
-}
-
-function insetPolygon(points, t) {
-  // points: [{x,y}...] (단순 폴리곤)
-  // t: 안쪽으로 들어갈 거리(px)
-  const n = points.length;
-  const area = polygonArea(points);
-  const isCCW = area > 0;
-
-  // 각 변의 "안쪽 법선" 구해서, 변을 t만큼 평행이동한 오프셋 선분(직선)을 만든다.
-  const offsetLines = [];
-  for (let i = 0; i < n; i++) {
-    const p = points[i];
-    const q = points[(i + 1) % n];
-
-    const dx = q.x - p.x;
-    const dy = q.y - p.y;
-
-    // CCW면 내부가 "왼쪽"이므로 left normal이 inward
-    // CW면 내부가 "오른쪽"이므로 right normal이 inward
-    const left = normalize(-dy, dx);
-    const inward = isCCW ? left : { x: -left.x, y: -left.y };
-
-    const p2 = { x: p.x + inward.x * t, y: p.y + inward.y * t };
-    const q2 = { x: q.x + inward.x * t, y: q.y + inward.y * t };
-
-    offsetLines.push([p2, q2]);
-  }
-
-  // 인접한 오프셋 직선들의 교점이 inset 폴리곤의 꼭짓점
-  const inset = [];
-  for (let i = 0; i < n; i++) {
-    const prev = offsetLines[(i - 1 + n) % n];
-    const curr = offsetLines[i];
-    const ip = lineIntersection(prev[0], prev[1], curr[0], curr[1]);
-    inset.push(ip);
-  }
-
-  return inset;
-}
-
-function pointsToPath(points) {
-  return points
-    .map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`))
-    .join(" ") + " Z";
-}
-
-function makeOutlinePath(points, thicknessPx) {
-  // 바깥(points) - 안쪽(inset) 을 evenodd로 구멍 처리
-  const inner = insetPolygon(points, thicknessPx);
-  const outerD = pointsToPath(points);
-
-  // inner는 반대 방향으로 돌려야 (even-odd/비정상 채움 문제 예방에 더 안전)
-  const innerRev = [...inner].reverse();
-  const innerD = pointsToPath(innerRev);
-
-  // compound path (outer + inner hole)
-  return `${outerD} ${innerD}`;
-}
-
-// ================================
-// 사용 예: 질문의 삼각형 (60,0) (120,300) (0,300)
-// ================================
-const triangle = [
-  { x: 60, y: 0 },
-  { x: 120, y: 120 },
-  { x: 0, y: 120 },
-];
-
-const outlineD = makeOutlinePath(triangle, 6);
-
-const exPath = document.querySelector("svg.exSVG path");
-if (exPath) {
-  exPath.setAttribute("d", outlineD);
-}
-*/
-
-// ————————————————————————————————————————————————————————————————————————
-// ————————————————————————————————————————————————————————————————————————
-// ————————————————————————————————————————————————————————————————————————
-
 // 브라우저(클라이언트)에서 동작하는 ESModule 코드
 // - 입력 문자열(10개)은 코드에 평문으로 존재하지 않음 (해시로만 매칭)
 // - 결과 배열도 코드에 직접 작성하지 않음 (암호화된 페이로드를 "수식(난독 PRNG+복호+파싱)"으로 복원)
@@ -922,6 +227,16 @@ function getResultArray(secretKey) {
 // ————————————————————————————————————————————————————————————————————————
 // ————————————————————————————————————————————————————————————————————————
 
+// PARAMS =================================================================
+const PARAMS = "JRPFIGSBDN";
+
+// VARIABLE ===============================================================
+const encryptSize = {
+  card: { w: "MTkx", h: "Mjk3" }, // card size -> w: 191, h: 297
+  num: { w: "MTg=", h: "MjY=" }, // number size -> w: 18, h: 26
+  t: { w: "NDA=", h: "NDA=", ws: "MzY=", hs: "MzY=" }, // T size -> w: 40, h: 40, ws: 36, hs: 36
+};
+
 // FUNCTIONS ==============================================================
 function pathAddClass(p, c) {
   p.classList.add(c);
@@ -932,43 +247,54 @@ function dAdd(p, d) {
     .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
   );
 };
-function svgTransformNum() {
-  const svgEl = document.querySelector('svg');
-  if (!svgEl) return;
-  const w = svgEl.getAttribute('width');
-  const h = svgEl.getAttribute('height');
-  const rect = svgEl.getBoundingClientRect();
 
-  // path
-  const path = document.querySelector('svg.card path.n');
-  if (!path) return;
-  const pathR = document.querySelector('svg.card path.nr');
-  if (!pathR) return;
+// 영문, 숫자 복호화 - 한글은 안됨
+function safeBase64Decode(str) {
+  try {
+    return atob(str);
+  } catch (e) {
+    console.error('유효하지 않은 Base64:', e);
+    return null;
+  }
+};
+// 영문, 숫자 암호화 - 한글은 안됨
+function safeBase64Encode(str) {
+  try {
+    return btoa(str);
+  } catch (e) {
+    // Unicode 문제일 가능성
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+};
+// btoa / atob 암복호호 사용예시
+// const eStr = safeBase64Encode(36); // 암호화
+// console.log(eStr);
+// const dStr = safeBase64Decode(eStr); // 복호화
+// console.log(parseInt(dStr));
+// console.log(dStr);
 
-  const bbox = path.getBBox();
-  
-  // path의 "M" 좌표 변경
-  const posX_N = 10;
-  const posY_N = 10;
-  const oldD = path.getAttribute('d');
-  // const newD = oldD.replace('M0,0', `M${posX_N},${posY_N}`);
-  const newD = oldD.replace(
-    /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
-    `M${posX_N},${posY_N}`
-  );
-  path.setAttribute('d', newD);
-  
-  const posX_NR = Math.floor(rect.width - 10 - bbox.width);
-  const posY_NR = Math.floor(rect.height - 10 - bbox.height);
-  const oldDr = pathR.getAttribute('d');
+// 숫자 복호화
+const dn = (n) => parseInt(safeBase64Decode(n));
 
-  // const newDr = oldD.replace('M0,0', `M${posX_NR},${posY_NR}`);
-  const newDr = oldDr.replace(
-    /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
-    `M${posX_NR},${posY_NR}`
-  );
-  pathR.setAttribute('d', newDr);
+// TODO: 인자로 받는 "OEJNIHMKXT"는 암호화 필요 - 
+// "OEJNIHMKXT"는 x축 이동이 필요한 숫자 1
+const editPos = {
+  // 왼쪽 상단 숫자의 시작 M 변경
+  f: (d) => {
+    return d.replace(
+      /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+      `M${PARAMS === "OEJNIHMKXT" ? 10 + 8 : 10},${10}`
+    );
+  },
+  // 오른쪽 하단 숫자의 시작 M 변경
+  r: (d) => {
+    return d.replace(
+      /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+      `M${PARAMS === "OEJNIHMKXT" ? Math.floor(parseInt(safeBase64Decode(encryptSize.card.w)) - 10 - 8) : Math.floor(parseInt(safeBase64Decode(encryptSize.card.w)) - 10 - parseInt(safeBase64Decode(encryptSize.num.w)))},${parseInt(safeBase64Decode(encryptSize.card.h)) - 10 - parseInt(safeBase64Decode(encryptSize.num.h))}`
+    );
+  },
 }
+
 /**
  * shape(중첩 배열)을 SVG path 문자열 배열로 변환합니다.
  *
@@ -1054,42 +380,1019 @@ DIV.setAttribute("id", "container");
 document.body.appendChild(DIV);
 const container = document.getElementById("container");
 
-const cardSize = { w: 191, h: 297 };
-
 // SVG ====================================================================
-const SVG_NS = "http://www.w3.org/2000/svg";
-const svg = document.createElementNS(SVG_NS, "svg");
-svg.classList.add("card");
-svg.setAttribute("width", cardSize.w);
-svg.setAttribute("height", cardSize.h);
-svg.setAttribute('viewBox', `0 0 ${cardSize.w} ${cardSize.h}`);
+const SVG_NS = "aHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmc="; // "http://www.w3.org/2000/svg";
+const svg = document.createElementNS(safeBase64Decode(SVG_NS), "svg");
+svg.setAttribute("width", safeBase64Decode(encryptSize.card.w));
+svg.setAttribute("height", safeBase64Decode(encryptSize.card.h));
+svg.setAttribute('viewBox', `0 0 ${safeBase64Decode(encryptSize.card.w)} ${safeBase64Decode(encryptSize.card.h)}`);
 
 // PATH ===================================================================
 // number -----------------------------------------------------------------
 const pathNumber = {
-  f: document.createElementNS(SVG_NS, "path"),
-  r: document.createElementNS(SVG_NS, "path")
+  f: document.createElementNS(safeBase64Decode(SVG_NS), "path"),
+  r: document.createElementNS(safeBase64Decode(SVG_NS), "path")
 };
 
-pathAddClass(pathNumber.f, "n");
-pathAddClass(pathNumber.r, "nr");
+const d_num = toSvgPaths(getResultArray(PARAMS));
 
-const numD = toSvgPaths(getResultArray("JRPFIGSBDN"));
-
-if (numD.length === 1) {
-  dAdd(pathNumber.f, numD[0]);
-  dAdd(pathNumber.r, numD[0]);
-} else if (numD.length === 2) {
-  dAdd(pathNumber.f, numD[0]);
-  dAdd(pathNumber.r, numD[1]);
-}
+if (d_num.length === 1) {
+  dAdd(pathNumber.f, editPos.f(d_num[0]));
+  dAdd(pathNumber.r, editPos.r(d_num[0]));
+} else if (d_num.length === 2) {
+  dAdd(pathNumber.f, editPos.f(d_num[0]));
+  dAdd(pathNumber.r, editPos.r(d_num[1]));
+};
 
 svg.appendChild(pathNumber.f);
 svg.appendChild(pathNumber.r);
 
 // T ----------------------------------------------------------------------
+const pathT = {
+  f: document.createElementNS(safeBase64Decode(SVG_NS), "path"),
+  r: document.createElementNS(safeBase64Decode(SVG_NS), "path"),
+}
 
+// 1 ~ 8 에 사용되는 T
+const dT = `
+  M0,0
+  m0,0
+  l10,2 
+  l20,0 
+  l10,8 
+  l-10,-2 
+  l-6,0 
+  l0,32 
+  l-6,-8 
+  l0,-24 
+  l-10,0 
+  Z
+`;
+// 1 ~ 8 에 사용되는 거꾸로 T
+const dTR = `
+  M0,0
+  m16,0
+  l6,8
+  l0,24
+  l10,0
+  l8,8
+  l-10,-2
+  l-20,0
+  l-10,-8
+  l10,2
+  l6,0
+  Z
+`;
+// 9 ~ 10 에 사용되는 T
+const dTs = `
+  M0,0
+  m0,0
+  l8,2 
+  l19,0 
+  l9,8 
+  l-9,-2 
+  l-5,0 
+  l0,28 
+  l-5,-8 
+  l0,-20 
+  l-8,0 
+  Z
+`;
+// 9 ~ 10 에 사용되는 거꾸로 T
+const dTRs = `
+  M0,0
+  m14,0
+  l5,8
+  l0,20
+  l8,0
+  l9,8
+  l-8,-2
+  l-19,0
+  l-9,-8
+  l9,2
+  l5,0
+  Z
+`;
 
+function draw1Card() {
+  // 중앙 : M75,128
+  const posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+  const posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+
+  const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+  const newD = dT
+    .trim() // 앞뒤 공백 제거
+    .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+    .replace(
+      /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+      `M${posX},${posY}`
+    );
+
+  path.setAttribute('d', newD);
+  svg.appendChild(path);
+};
+// draw1Card();
+
+function draw2Card() {
+  // 상 : M75,68
+  // 하 : M75,188
+  const posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+  let posY = 0;
+  let newD = "";
+  for (let i = 0; i < 2; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 위쪽 T
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 2));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 아래쪽 T
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 2));
+
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw2Card();
+
+function draw3Card() {
+  // 상 : M75,61
+  // 중 : M75,128
+  // 하 : M75,195
+  const posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+  let posY = 0;
+  let newD = "";
+  for (let i = 0; i < 3; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 위쪽 T
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 중간 T
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 아래쪽 T
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw3Card();
+
+function draw4Card() {
+  // 좌상 : M35,61
+  // 우상 : M115,61
+  // 좌하 : M35,195
+  // 우하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 4; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 좌하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 우하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw4Card();
+
+function draw5Card() {
+  // 좌상 : M35,61 
+  // 우상 : M115,61
+  // 중앙 : M75,128
+  // 좌하 : M35,195
+  // 우하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 5; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 중앙 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 좌하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 4) {
+      // 우하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw5Card();
+
+function draw6Card() {
+  // 좌상 : M35,61 
+  // 우상 : M115,61
+  // 좌중 : M35,128
+  // 우중 : M115,128
+  // 좌하 : M35,195
+  // 우하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 6; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 좌중 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 우중 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 4) {
+      // 좌하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 5) {
+      // 우하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw6Card();
+
+function draw7Card() {
+  // 좌상 : M35,61 
+  // 우상 : M115,61
+  // 중상 : M75,95
+  // 좌중 : M35,128
+  // 우중 : M115,128
+  // 좌하 : M35,195
+  // 우하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 7; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 중상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) / 1.2)
+      );
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 좌중 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 4) {
+      // 우중 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 5) {
+      // 좌하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 6) {
+      // 우하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw7Card();
+
+function draw8Card() {
+  // 좌상 : M35,61
+  // 우상 : M115,61
+  // 중상 : M75,95
+  // 좌중 : M35,128
+  // 우중 : M115,128
+  // 중하 : M75,161
+  // 좌하 : M35,195
+  // 우하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 8; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 중상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) / 1.2)
+      );
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 좌중 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 4) {
+      // 우중 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2);
+      newD = dT
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 5) {
+      // 중하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2);
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) / 1.2)
+      );
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 6) {
+      // 좌하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 7) {
+      // 우하 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 + dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5));
+      newD = dTR
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw8Card();
+
+function draw9Card() {
+  // 좌상상 : M35,61
+  // 우상상 : M115,61
+  // 좌상 : M35,108
+  // 우상 : M115,108
+  // 중앙 : M75,128
+  // 좌하 : M35,148
+  // 우하 : M115,148
+  // 좌하하 : M35,195
+  // 우하하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 9; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 좌상 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        - ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 우상 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        + ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 4) {
+      // 중앙 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+      );
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 5) {
+      // 좌하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        - ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 6) {
+      // 우하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        + ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 7) {
+      // 좌하하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        - ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5) )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 8) {
+      // 우하하 T
+      // 좌하하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        + ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5) )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+// draw9Card();
+
+function draw10Card() {
+  // 좌상상 : M35,61
+  // 우상상 : M115,61
+  // 중상 : M75,88
+  // 좌상 : M35,108
+  // 우상 : M115,108
+  // 좌하 : M35,148
+  // 우하 : M115,148
+  // 중하 : M75,168
+  // 좌하하 : M35,195
+  // 우하하 : M115,195
+  let posX = 0;
+  let posY = 0;
+  let newD = "";
+
+  for (let i = 0; i < 10; i++) {
+    const path = document.createElementNS(safeBase64Decode(SVG_NS), "path");
+    if (i === 0) {
+      // 좌상상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 - (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 1) {
+      // 우상상 T
+      posX = Math.floor(dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 + (dn(encryptSize.t.w)));
+      posY = Math.floor(dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 - dn(encryptSize.t.h) - (dn(encryptSize.t.h) / 1.5));
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 2) {
+      // 중상 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) )
+      );
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 3) {
+      // 좌상 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        - ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 4) {
+      // 우상 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        + ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        - ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 5) {
+      // 좌하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        - ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 6) {
+      // 우하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        + ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) - dn(encryptSize.t.h) / 2  )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 7) {
+      // 중하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 8) {
+      // 좌하하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        - ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5) )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    } else if (i === 9) {
+      // 우하하 T
+      posX = Math.floor(
+        ( dn(encryptSize.card.w) / 2 - dn(encryptSize.t.w) / 2 )
+        + ( dn(encryptSize.t.w) )
+      );
+      posY = Math.floor(
+        ( dn(encryptSize.card.h) / 2 - dn(encryptSize.t.h) / 2 )
+        + ( dn(encryptSize.t.h) + (dn(encryptSize.t.h) / 1.5) )
+      );
+
+      newD = dTRs
+        .trim() // 앞뒤 공백 제거
+        .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+        .replace(
+          /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+          `M${posX},${posY}`
+        );
+    };
+
+    path.setAttribute('d', newD);
+    svg.appendChild(path);
+  }
+};
+draw10Card();
+
+// ADD SVG ================================================================
 container.appendChild(svg);
-
-svgTransformNum()
