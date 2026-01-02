@@ -693,229 +693,212 @@ if (exPath) {
 // ————————————————————————————————————————————————————————————————————————
 // ————————————————————————————————————————————————————————————————————————
 
-// 브라우저(클라이언트)에서 동작하는 ESModule 코드
-// - 입력 문자열(10개)은 코드에 평문으로 존재하지 않음 (해시로만 매칭)
-// - 결과 배열도 코드에 직접 작성하지 않음 (암호화된 페이로드를 "수식(난독 PRNG+복호+파싱)"으로 복원)
-const __PAYLOADS = Object.create({
-  0x550b0f8c: "tYgZn8WQVDTzjwbgZ/VqLNbdp3kyXw==",
-  0xc47bb621: "gAAHMpXA6/4NinNwxU8040b3gbPb61vkz7EdI6UcJScpXyfwWM4=",
-  0xb8d8452d: "XqsmwUz+AG++leEZoVS3zK5MEi3x/LIdT/5mvY+RGsCuPszBfo0/pVRwUrAz" +
-  "8wA2IoOQz5Oc38i7j5lY7BNnIvIV2GZqrifghqV1l1pePC4RPRwdUYfp+Zka" +
-  "Y54=",
-  0x57e225f7: "EyrIiDsCXzq+h/dRgKrHDkVHYsfqPEGx/Lt0OZK8NHZ18sapBD6EYF9SJxSS" +
-  "EF5VSmcy38/ovf0GQwRq4iBwpH82UZuJGPvrJy7+8hNAi6ccDAOoEv8U50ac" +
-  "JDc=",
-  0xef349a13: "no0zFPciVKVwt9mAmJRTIRxVX7tfdxecfqjUDpFsUuCHyR5sBRG7v61Mhudq" +
-  "t8+9XIyQIU5b",
-  0x83af8ca7: "iPxF6D/eAUhBF/D6QMzUhCjnvOExPPXdEfyw2oPR07XIhLSlFZNczHEtlsPn" +
-  "RA8Zw+UJo4Kr3E//vQiMy86O4WHzHmFcBKPN77WhEJdxWLY7nXuDaAJo82kv" +
-  "BsnT3mHuv1j0rDZ4imvcU90OqJobZ+OF3hAfdq8LXlDE4Y0m4KnYKsvpwWEA" +
-  "s46EkOI=",
-  0x73f143c9: "EyuDAmZZyfGG2j4WZbf+6ezyfxYVaATuRs31WWSnhGgPQUTKhzQkiJmDlJJi" +
-  "snCW5Iofl3YUZ3tn9zN0",
-  0x1bf3e70b: "lnOsUS7somuJdS8zEahhHPC1YrFfUhwJKZpt74m298ekfQ5/QSfEbkWz22xQ" +
-  "mYd61sML1pnCnLqvPm/bIj+hVw2Xdh7zPjLrMkefh41FU8vMnUMyVzQ=",
-  0xe3d01ebf: "2TgAVeNdpoA+F4M/T9oqpZOw9xK63nVgkfuM8z70N1t8bnFr2N9pOmMM7oh2" +
-  "1M74WEADtjuBs/08Q2jyaVJOzLL9tqDBpU023X3flINLXu4O+RJa6GAJD8SV" +
-  "0R7zhktDAGIRm3NVpPFDPaUrV/jrsH9THNhJxXjOUeygPBDjVIgIK3ZMOeeS" +
-  "gZv9rDY=",
-  0x5a916730: "wf3BNntK/1okdSbPC7Pfjqycyv4Hf0buzsurVDAw1BvyNb0z6pHfOMIasAyd" +
-  "OOZSDfwV2LXELIr0apV/oMZps9KCY2oWbYj7SAvv3hU7Z3zlWI44lauAbEuJ" +
-  "we0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkC" +
-  "YHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==",
-});
+const START = 0x7fff; // 배열 시작 마커
+const END = 0x7ffe; // 배열 종료 마커
 
-/*
-const __PAYLOADS = Object.create(null);
+const B = (...parts) => parts.join("");
 
-// key = FNV-1a 32-bit hash (입력 문자열의 해시), value = 암호화된(base64) 바이너리
-__PAYLOADS[0x550b0f8c] = "tYgZn8WQVDTzjwbgZ/VqLNbdp3kyXw==";
-__PAYLOADS[0xc47bb621] = "gAAHMpXA6/4NinNwxU8040b3gbPb61vkz7EdI6UcJScpXyfwWM4=";
-
-__PAYLOADS[0xb8d8452d] =
-  "XqsmwUz+AG++leEZoVS3zK5MEi3x/LIdT/5mvY+RGsCuPszBfo0/pVRwUrAz" +
-  "8wA2IoOQz5Oc38i7j5lY7BNnIvIV2GZqrifghqV1l1pePC4RPRwdUYfp+Zka" +
-  "Y54=";
-
-__PAYLOADS[0x57e225f7] =
-  "EyrIiDsCXzq+h/dRgKrHDkVHYsfqPEGx/Lt0OZK8NHZ18sapBD6EYF9SJxSS" +
-  "EF5VSmcy38/ovf0GQwRq4iBwpH82UZuJGPvrJy7+8hNAi6ccDAOoEv8U50ac" +
-  "JDc=";
-
-__PAYLOADS[0xef349a13] =
-  "no0zFPciVKVwt9mAmJRTIRxVX7tfdxecfqjUDpFsUuCHyR5sBRG7v61Mhudq" +
-  "t8+9XIyQIU5b";
-
-__PAYLOADS[0x83af8ca7] =
-  "iPxF6D/eAUhBF/D6QMzUhCjnvOExPPXdEfyw2oPR07XIhLSlFZNczHEtlsPn" +
-  "RA8Zw+UJo4Kr3E//vQiMy86O4WHzHmFcBKPN77WhEJdxWLY7nXuDaAJo82kv" +
-  "BsnT3mHuv1j0rDZ4imvcU90OqJobZ+OF3hAfdq8LXlDE4Y0m4KnYKsvpwWEA" +
-  "s46EkOI=";
-
-__PAYLOADS[0x73f143c9] =
-  "EyuDAmZZyfGG2j4WZbf+6ezyfxYVaATuRs31WWSnhGgPQUTKhzQkiJmDlJJi" +
-  "snCW5Iofl3YUZ3tn9zN0";
-
-__PAYLOADS[0x1bf3e70b] =
-  "lnOsUS7somuJdS8zEahhHPC1YrFfUhwJKZpt74m298ekfQ5/QSfEbkWz22xQ" +
-  "mYd61sML1pnCnLqvPm/bIj+hVw2Xdh7zPjLrMkefh41FU8vMnUMyVzQ=";
-
-__PAYLOADS[0xe3d01ebf] =
-  "2TgAVeNdpoA+F4M/T9oqpZOw9xK63nVgkfuM8z70N1t8bnFr2N9pOmMM7oh2" +
-  "1M74WEADtjuBs/08Q2jyaVJOzLL9tqDBpU023X3flINLXu4O+RJa6GAJD8SV" +
-  "0R7zhktDAGIRm3NVpPFDPaUrV/jrsH9THNhJxXjOUeygPBDjVIgIK3ZMOeeS" +
-  "gZv9rDY=";
-
-__PAYLOADS[0x5a916730] =
-  "wf3BNntK/1okdSbPC7Pfjqycyv4Hf0buzsurVDAw1BvyNb0z6pHfOMIasAyd" +
-  "OOZSDfwV2LXELIr0apV/oMZps9KCY2oWbYj7SAvv3hU7Z3zlWI44lauAbEuJ" +
-  "we0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkC" +
-  "YHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==";
-*/
-
-function __fnv1a32(str) {
+// (1) 입력 문자열 -> 32bit 해시 (FNV-1a)
+function fnv1a32(s) {
   let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i) & 0xff;
-    h = Math.imul(h, 0x01000193) >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i) & 0xff;
+    h = Math.imul(h, 0x01000193);
   }
   return h >>> 0;
 }
 
-function __xorshift32(x) {
+// (2) 해시 믹싱 (분포 개선)
+function mix32(x) {
   x >>>= 0;
-  x ^= (x << 13) >>> 0;
-  x ^= x >>> 17;
-  x ^= (x << 5) >>> 0;
+  x ^= x >>> 16;
+  x = Math.imul(x, 0x7feb352d) >>> 0;
+  x ^= x >>> 15;
+  x = Math.imul(x, 0x846ca68b) >>> 0;
+  x ^= x >>> 16;
   return x >>> 0;
 }
 
-// “어려운 수식” 기반 바이트 복호화(키스트림 생성)
-function __decryptInPlace(u8, seed) {
-  let s = (seed ^ 0xa5a5a5a5) >>> 0;
-
-  for (let i = 0; i < u8.length; i++) {
-    // i*0x9E3779B9 누산 + xorshift + 비선형 혼합
-    const add = Math.imul(i, 0x9e3779b9) >>> 0;
-    s = __xorshift32((s + add) >>> 0);
-
-    const rot = ((s >>> 16) | (s << 16)) >>> 0;
-    const mix = (Math.imul(s, 0x27d4eb2d) ^ rot) >>> 0;
-    const k = mix & 0xff;
-
-    u8[i] ^= k;
+// (3) xorshift32 기반 바이트 스트림 (복호화)
+function xorInPlace(bytes, seed) {
+  let x = seed >>> 0;
+  let r = 0;
+  for (let i = 0; i < bytes.length; i++) {
+    if ((i & 3) === 0) {
+      x ^= (x << 13) >>> 0;
+      x ^= x >>> 17;
+      x ^= (x << 5) >>> 0;
+      r = x >>> 0;
+    }
+    const shift = 24 - ((i & 3) << 3);
+    bytes[i] ^= (r >>> shift) & 0xff;
   }
+  return bytes;
 }
 
-function __b64ToU8(b64) {
-  // 브라우저: atob 사용
+// (4) base64 -> Uint8Array
+function b64ToBytes(b64) {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i) & 0xff;
   return out;
 }
 
-function __i16LE(dv, off) {
-  return dv.getInt16(off, true);
+// (5) 토큰 스트림(빅엔디안 int16) -> 중첩 배열 복원
+function tokensToNestedArray(tokens) {
+  const stack = [];
+  let cur = null;
+  let root = null;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+
+    if (t === START) {
+      const arr = [];
+      if (cur) cur.push(arr);
+      else root = arr;
+      stack.push(cur);
+      cur = arr;
+      continue;
+    }
+
+    if (t === END) {
+      cur = stack.pop();
+      continue;
+    }
+
+    // 수치 토큰은 10배 스케일된 값이므로 /10
+    cur.push(t / 10);
+  }
+
+  return root;
 }
 
-function __unscale(i16) {
-  // 스케일(×10) 복원 + “의미 없는 0항”을 섞어 수식 난도를 올림 (값은 그대로)
-  const q = i16 / 10;
-  const z = Math.sqrt(2) - Math.sqrt(2); // 0
-  return Math.round((q + z) * 10) / 10;
+// (6) seed -> payload 선택 (입력 원문 문자열은 코드에 없음)
+const TABLE = [
+  [
+    0x8da12359 >>> 0,
+    "73/fwxRrLZ81OCTstSsDyQBAH/XERLytNBBX1VOOxGOXyzispNPglD3QKdY=",
+  ],
+  [
+    0xcb721531 >>> 0,
+    B(
+      "zKU1RLunoB3E3qHQvEil6cnjHrlcqNgwKPSIPjcktDh7JU6ww9rmBpGE8PFMdQij",
+      "r7jrCqYGhq3Xy9piczNwHlUq2UN+4LENfaNTdA=="
+    ),
+  ],
+  [
+    0x3c0b998e >>> 0,
+    B(
+      "14rDjJ9+ok5NyXKUnxQQWN7+C9bid7/XO3g9uqi/Yea2xKii1jiXr9z/HPRT3lQl",
+      "0+TpchhsC6Y4ok3sTBJWeF30TDbV2Z+yvbt4/wdKBOw8y/f6i1HyvYumTwSL6mpd",
+      "3VKwsoPE2PGMc9+tZQJV9lfbfy1fZO51GBiMhbkdkHzp3xS0A5Lz6m/reRiYV+bh",
+      "dXrfxZ8mOP7Q9A9b8nCGMLkDHBQIiXTWa5DkYgruIpaYXPwpfQqXeFyjVhU="
+    ),
+  ],
+  [
+    0xe8ac3311 >>> 0,
+    B(
+      "yPXVSdYgaJjdRWrA/ECzL84bLnzPuHnlT4/AE80Suzi0s/mj+S2uGkxqmignCzNr",
+      "8lLHOfGfhwCxEz0Li9TGXxAwGjFpE0ipgKbAWcfL91oCfV1ryb/0aVOlHEcvheNa",
+      "IfWHEtPws1j5FlsUHNJID2V8ZIdL7rMFp2Xfz++mzkAhrenjk33owLi4U1iI3IPw",
+      "jHw78OsoTeI6xFMdO9YNb3cne64QrKhlbATNHyFPYa1vRUOXoaJ8P6BGS8Y="
+    ),
+  ],
+  [
+    0xa994b126 >>> 0,
+    B(
+      "tkLOwYzTkJNZDg5sMIK74uaTvrcJjhMaIs1okMQa+ICmmXvW+g4jjeXuaiiN/Yml",
+      "24FcX0HLiGWhDac/GJrMDR//sc6ej5jCqGHe+6u+K7srHmlTkNf03ZOGrH83HUed",
+      "/EwGtaCQv0c2fXg/"
+    ),
+  ],
+  [
+    0xd197baa3 >>> 0,
+    B(
+      "gUWOfc4p2Sc0s/hgs7PSfpY0aWH9t2QUqWS4WnXbNi0QvIcbBFwGPpbvX4P7983H",
+      "K9t/AaAqEE47tVC0OUilVPEqiOQ6kglCjZrRtaeIFJaHwfZfF7Spu00AWFuL/AkZ",
+      "zpLv4vMuVeJr2eOqrl5+WDIPOpzxMW4S3D6qD0E/1K5RbKn67WEgvmViKRKzGZL8",
+      "ZkohoA2u7J5YYmyhy3hC+yJokzGvNwjiDQ6tiq7F+LakQoOeEhzGp9+nHaA+Iss6",
+      "gplS8y/Ze3EayLhMNMx9Q1gbGU/cLKkzz8P3d/T1fCBWJaxKC930F4IuqCnS0Rvd",
+      "WJ3sVcae09QFyKuIh+UFjEIx6pIN8lTyT9/SkJuzTXcS5IpUdKMWVEAM/O8="
+    ),
+  ],
+  [
+    0xe789a1a7 >>> 0,
+    B(
+      "2+dYpsFmsyCXQ2NgETt4NtmPrcmnjhjRaUqTcFIpKzn8v3y7+d33iyHOuq8LhAqm",
+      "UKmq1lRv5WItmo6GZ+0tlUZkQ+VtHtYow12N30xFfB8U7OpE3VAQr7gBOfj6NhWF",
+      "uVQm0+5yBXH6pXYGWFEh0Pxj5Vob4u38AgJTTQ=="
+    ),
+  ],
+  [
+    0xc3dc4a13 >>> 0,
+    B(
+      "ZqCbI11G0f4XrWX9aXiuu5flmGYJqc/9rh4O6ifxYHSHEW1mTTvHO/HG+ze1dLiM",
+      "kwciAi+VqnpeAklSvaRiGdvirM8OnE3s9bzi2eUgCxISa4ztrax4qfy84KzFund/",
+      "nGLlO5fwdjbI4l7fq6MvPPU4ci8k+dpKdi4rd2t/D8THT9aAPl/5rJOkxnvWbeIR",
+      "OQJcvJBRnJZtKtCMYGvutzRqrtYY4qdxo51sMw=="
+    ),
+  ],
+  [
+    0x8eb27622 >>> 0,
+    B(
+      "sUPqxqCX/bTbHdlF6WvanrV07COzRC5ieWoU8sM1VJU81YtFtedm2h63jSUBGwkv",
+      "57RCg54NQjpg+/Ue2cv6VPeOnfst+1QdKSD0pGatLL/EHsaD5mV6tvKigcRtSHA4",
+      "aim9nnK/d26XY+dtH+8lBBLcEBsEz46AyAIQXi4OM057GKc8M17ZrmfC80yXkFE3",
+      "5K86cx/c5AJnN+gNvLBoNwLLcDVrneknh90R+/nf7rMKz13dTuF0F0kfza3FnUUZ",
+      "qYrtlO7YPINc1R1WcAUwKIpkcHUIXqyK4ZiNWHfG7kVkOssjCXrL7Vx7R6k66Y16",
+      "bgOq7hCYQIAF4i3gKqwSYTsbHFHUFvQ9PxIzy8uJT18NesKjcjujA1Z1CGE="
+    ),
+  ],
+  [
+    0xc4dab937 >>> 0,
+    B(
+      "k4F2Fvrbqbedqe5+zL94DNuUa5LqGNMgdTZyf0vcevff/dQ7quCZp5fzho6DCStM",
+      "4KBNSVcY74wDlR/0YtQPwuZKvOoE1JwU4gDtC4C/k5JK+ve3GngTsHkHJrYzR6n9",
+      "iRiPUgx9o2I7reEO+feD/ackjU3qt446FG60IRBD5/9k6Ysq6Yyle0ZySUtz/jmh",
+      "rJVMxCtDQdWsezOBhg5fb5FOZb9084gKO/opIKh2WTvGtl0TP4lgph/W+5dkEjtS",
+      "My5NuxmeidDB3pfyx2YqPbUC1wCjj4YSRmX8Oopv4ZxA57dROBF+qByvZftCMgRg",
+      "SE/uOLThE2PwXic5E6l2Nk55lalVZDUIN4lX/vwmifq5Leo0xslQKsvZsh3+7s4H",
+      "vi7oK0mJtnVqZS9qjrDaVbYoMEB77wWRYEpHwFWmVRbPsk/TUqI4JxFFtLchJgmQ",
+      "rU5y7fxfNEfwFTuXJw3hTDBi0N7qnv5i"
+    ),
+  ],
+];
+
+// TABLE에서 seed에 해당하는 payload 찾기
+function findPayload(seed) {
+  // 일부러 단순 비교 대신, 지저분한 수식으로 변환 후 비교
+  // (보안이 아니라 난독화 목적)
+  const s = seed >>> 0;
+  for (let i = 0; i < TABLE.length; i++) {
+    const k = TABLE[i][0] >>> 0;
+    const a =
+      (Math.imul((k ^ 0x9e3779b9) >>> 0, 0x85ebca6b) + i * 0x27d4eb2f) >>> 0;
+    const b =
+      (Math.imul((s ^ 0x9e3779b9) >>> 0, 0x85ebca6b) + i * 0x27d4eb2f) >>> 0;
+    if (a === b) return TABLE[i][1];
+  }
+  return null;
 }
 
-function __unpack(u8) {
-  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
-  let p = 0;
+// ====== 공개 함수 ======
+function getResult(input) {
+  const seed = mix32(fnv1a32(String(input)));
+  const payload = findPayload(seed);
+  if (!payload) return null;
 
-  const depth = dv.getUint8(p++);
-  if (depth !== 1 && depth !== 2 && depth !== 3) throw new Error("bad payload");
+  const bytes = b64ToBytes(payload);
+  xorInPlace(bytes, seed);
 
-  // counts 읽기
-  let groupCount = 0;
-  let pathCount = 0;
-  let pathsPerGroup = null;
-  let lens = null; // depth2: [len...], depth3: [[len...], ...]
-
-  if (depth === 1) {
-    const n = dv.getUint8(p++);
-    const out = new Array(n);
-    for (let i = 0; i < n; i++) {
-      const x = __unscale(__i16LE(dv, p));
-      const y = __unscale(__i16LE(dv, p + 2));
-      p += 4;
-      out[i] = [x, y];
-    }
-    return out;
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const tokens = new Int16Array(bytes.byteLength >>> 1);
+  for (let i = 0; i < tokens.length; i++) {
+    tokens[i] = dv.getInt16(i << 1, false); // big-endian
   }
 
-  if (depth === 2) {
-    pathCount = dv.getUint8(p++);
-    lens = new Array(pathCount);
-    for (let i = 0; i < pathCount; i++) lens[i] = dv.getUint8(p++);
-
-    const out = new Array(pathCount);
-    for (let pi = 0; pi < pathCount; pi++) {
-      const n = lens[pi];
-      const path = new Array(n);
-      for (let i = 0; i < n; i++) {
-        const x = __unscale(__i16LE(dv, p));
-        const y = __unscale(__i16LE(dv, p + 2));
-        p += 4;
-        path[i] = [x, y];
-      }
-      out[pi] = path;
-    }
-    return out;
-  }
-
-  // depth === 3
-  groupCount = dv.getUint8(p++);
-  pathsPerGroup = new Array(groupCount);
-  lens = new Array(groupCount);
-
-  for (let gi = 0; gi < groupCount; gi++) {
-    const pc = dv.getUint8(p++);
-    pathsPerGroup[gi] = pc;
-    const l = new Array(pc);
-    for (let pi = 0; pi < pc; pi++) l[pi] = dv.getUint8(p++);
-    lens[gi] = l;
-  }
-
-  const out = new Array(groupCount);
-  for (let gi = 0; gi < groupCount; gi++) {
-    const pc = pathsPerGroup[gi];
-    const grp = new Array(pc);
-    for (let pi = 0; pi < pc; pi++) {
-      const n = lens[gi][pi];
-      const path = new Array(n);
-      for (let i = 0; i < n; i++) {
-        const x = __unscale(__i16LE(dv, p));
-        const y = __unscale(__i16LE(dv, p + 2));
-        p += 4;
-        path[i] = [x, y];
-      }
-      grp[pi] = path;
-    }
-    out[gi] = grp;
-  }
-  return out;
-}
-
-// ✅ 요구사항 함수
-function getResultArray(secretKey) {
-  if (typeof secretKey !== "string") throw new TypeError("string required");
-
-  const h = __fnv1a32(secretKey);
-  const b64 = __PAYLOADS[h];
-  if (!b64) throw new Error("unknown key");
-
-  const bytes = __b64ToU8(b64);
-  __decryptInPlace(bytes, h);
-
-  return __unpack(bytes);
+  return tokensToNestedArray(tokens);
 }
 
 // ————————————————————————————————————————————————————————————————————————
@@ -1065,31 +1048,38 @@ svg.setAttribute("height", cardSize.h);
 svg.setAttribute('viewBox', `0 0 ${cardSize.w} ${cardSize.h}`);
 
 // PATH ===================================================================
-// number -----------------------------------------------------------------
-const pathNumber = {
+const path = {
   f: document.createElementNS(SVG_NS, "path"),
   r: document.createElementNS(SVG_NS, "path")
 };
 
-pathAddClass(pathNumber.f, "n");
-pathAddClass(pathNumber.r, "nr");
+pathAddClass(path.f, "n");
+pathAddClass(path.r, "nr");
 
-const numD = toSvgPaths(getResultArray("JRPFIGSBDN"));
+const dd = getResult("JRPFIGSBDN");
+console.log(dd);
+console.log(JSON.stringify(dd));
 
-if (numD.length === 1) {
-  dAdd(pathNumber.f, numD[0]);
-  dAdd(pathNumber.r, numD[0]);
-} else if (numD.length === 2) {
-  dAdd(pathNumber.f, numD[0]);
-  dAdd(pathNumber.r, numD[1]);
-}
-
-svg.appendChild(pathNumber.f);
-svg.appendChild(pathNumber.r);
-
-// T ----------------------------------------------------------------------
+// (async () => {
+//   const dd = await computeResult("JRPFIGSBDN");
+//   console.log(dd);
+// })()
 
 
-container.appendChild(svg);
+// const d = toSvgPaths(dd);
 
-svgTransformNum()
+
+// if (d.length === 1) {
+//   dAdd(path.f, d[0]);
+//   dAdd(path.r, d[0]);
+// } else if (d.length === 2) {
+//   dAdd(path.f, d[0]);
+//   dAdd(path.r, d[1]);
+// }
+
+// svg.appendChild(path.f);
+// svg.appendChild(path.r);
+
+// container.appendChild(svg);
+
+// svgTransformNum()
