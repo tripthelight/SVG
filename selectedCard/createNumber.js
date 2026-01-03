@@ -8,6 +8,7 @@ export default (_d) => new Promise(resolve => {
 
     // - 입력 문자열(10개)은 코드에 평문으로 존재하지 않음 (해시로만 매칭)
     // - 결과 배열도 코드에 직접 작성하지 않음 (암호화된 페이로드를 "수식(난독 PRNG+복호+파싱)"으로 복원)
+    /*
     const __PAYLOADS = Object.create({
       0x550b0f8c: "tYgZn8WQVDTzjwbgZ/VqLNbdp3kyXw==",
       0xc47bb621: "gAAHMpXA6/4NinNwxU8040b3gbPb61vkz7EdI6UcJScpXyfwWM4=",
@@ -36,8 +37,8 @@ export default (_d) => new Promise(resolve => {
       "we0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkC" +
       "YHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==",
     });
+    */
 
-    /*
     const __PAYLOADS = Object.create(null);
 
     // key = FNV-1a 32-bit hash (입력 문자열의 해시), value = 암호화된(base64) 바이너리
@@ -83,7 +84,6 @@ export default (_d) => new Promise(resolve => {
       "OOZSDfwV2LXELIr0apV/oMZps9KCY2oWbYj7SAvv3hU7Z3zlWI44lauAbEuJ" +
       "we0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkC" +
       "YHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==";
-    */
 
     function __fnv1a32(str) {
       let h = 0x811c9dc5;
