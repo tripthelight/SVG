@@ -16,6 +16,6 @@ import selectedCard from "./selectedCard/selectedCard.js";
   DIV.setAttribute("id", "container");
   document.body.appendChild(DIV);
 
-  await selectedCard("JRPFIGSBDN");
+  await selectedCard("OEJNIHMKXT");
   console.log("===== 다음 함수 실행 =============");
 })();
