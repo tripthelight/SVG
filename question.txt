@@ -87,3 +87,39 @@ const drs = [ [14,0],[5,8],[0,20],[8,0],[9,8],[-8,-2],[-19,0],[-9,-8],[9,2],[5,0
 위처럼 
 배열 내부에 2개의 값을 가진 배열만 있을 경우, 1개의 문자열을 가진 배열을 리턴하고,
 배열 내부에 2개의 값을 가진 배열 묶음이 n개인 경우, n개의 문자열을 가진 배열을 리턴하는 javascript 코드를 작성하라!
+
+/////////////////////////////////////////////////////////////
+
+async function createCard(nCode) {
+  // 1. SVG를 그리고
+  // 2. 숫자그리기와 카드문양그리기를 race 시켜
+  console.log("createCard 함수 실행됨");
+  
+  const drawSVG = async () => {
+    console.log("SVG 그리기");
+  }; 
+  await drawSVG();
+
+  const drawNumber = new Promise((resolve, reject) => {
+    console.log("number 그리기");
+  });
+  const drawT = new Promise((resolve, reject) => {
+    console.log("카드문양 그리기");
+  });
+
+  Promise.race([drawNumber, drawT]);
+};
+
+(async () => {
+  await createCard("PDBIZUOFMJ");
+
+  console.log("createCard 함수 종료됨 - 다음 함수 실행");
+})();
+
+// //////////////////////
+
+SVG를 먼저 그리고, SVG 내부에 숫자와 문양을 그린 뒤 다음 함수를 실행시키고 싶다.
+위 코드는 원하는 흐름데로 잘 작성되었냐?
+더 효과적인 전략이 있다면 제시해라.
+
+/////////////////////////////////////////////////////////////

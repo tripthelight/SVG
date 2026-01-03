@@ -1641,7 +1641,80 @@ container.appendChild(svg);
 // ————————————————————————————————————————————————————————————————————————
 // ————————————————————————————————————————————————————————————————————————
 
-function createCard() {
-
+const createSVG = async () => {
+  console.log("SVG 그리기");
+  // 실제 SVG 생성/DOM 삽입 작업
+  return "svg";
 };
-createCard();
+
+// const createNumber = async (d) => {
+//   console.log("number 그리기", d);
+//   // 실제 숫자 그리기 작업
+// };
+
+// const createT = async (d) => {
+//   console.log("T 그리기", d);
+//   // 실제 문양 그리기 작업
+// };
+
+// const createSVG = () => new Promise(resolve => {
+//   setTimeout(() => {
+//     console.log("SVG 그리기");
+//     resolve("SVG");
+//   }, 2_000);
+// });
+
+const createNumber = (d) => new Promise(resolve => {
+  setTimeout(() => {
+    console.log("number 그리기", d);
+    resolve();
+  }, 3_000);
+});
+
+const createT = (d) => new Promise(resolve => {
+  setTimeout(() => {
+    console.log("T 그리기", d);
+    resolve();
+  }, 2_000);
+});
+
+async function selectedCard(nCode) {
+  console.log("----- selectedCard 함수 실행됨 -----");
+
+  const data = await createSVG();
+
+  // 숫자/문양은 병렬로 그리고 둘 다 끝날 때까지 대기
+  await Promise.all([createNumber(data), createT(data)]);
+
+  // 여기까지 오면 SVG + 숫자 + 문양 완료
+}
+
+(async () => {
+  await selectedCard("PDBIZUOFMJ");
+  console.log("----- selectedCard 함수 종료됨 -----");
+  console.log("===== 다음 함수 실행 =============");
+})();
+
+
+/*
+const createNum = (data) => {
+  const newData = data;
+  console.log("createNum", newData);
+  return newData;
+}
+const createT = (data) => {
+  const newData = data;
+  console.log("createT", newData);
+  return newData;
+}
+const selectedCard = nCode => new Promise((reslove) => {
+  reslove(nCode);
+});
+
+selectedCard("asdf")
+  .then(createNum)
+  .then(createT)
+  .then(() => {
+    console.log("끝");
+  });
+*/

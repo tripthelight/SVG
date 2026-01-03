@@ -1,0 +1,21 @@
+{
+  "name": "svg",
+  "version": "1.0.0",
+  "description": "- https://jxnblk.io/paths/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tripthelight/SVG.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/tripthelight/SVG/issues"
+  },
+  "homepage": "https://github.com/tripthelight/SVG#readme"
+}
