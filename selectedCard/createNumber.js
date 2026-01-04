@@ -143,6 +143,7 @@ export default (_d) => new Promise(resolve => {
       let p = 0;
 
       const depth = dv.getUint8(p++);
+
       if (depth !== 1 && depth !== 2 && depth !== 3) throw new Error("bad payload");
 
       // counts 읽기
@@ -222,6 +223,7 @@ export default (_d) => new Promise(resolve => {
 
       const h = __fnv1a32(secretKey);
       const b64 = __PAYLOADS[h];
+      console.log("b64 >>>>>>>>> ", b64);
       if (!b64) throw new Error("unknown key");
 
       const bytes = __b64ToU8(b64);

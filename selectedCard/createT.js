@@ -56,6 +56,8 @@ export default (_d) => new Promise(resolve => {
       const bin = atob(b64);
       const out = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      console.log("out : ", out);
+      
       return out;
     };
 
@@ -105,7 +107,10 @@ export default (_d) => new Promise(resolve => {
     const decodePlacements = (caseId) => {
       const k = (0x5C ^ 0x00) | 0;
       const off = (0x10 + 1) | 0; // 17
+      
       const raw = B(CASE_TPL_B64[caseId]);
+
+      console.log("raw : ", raw);
 
       const dec = (i) => (((raw[i] ^ k) - off) & 0xff) | 0;
 
@@ -124,6 +129,8 @@ export default (_d) => new Promise(resolve => {
     // --- (5) 최종 결과 생성: 반환 배열 리터럴을 직접 작성하지 않음 ---
     const build = (caseId) => {
       const placements = decodePlacements(caseId);
+      console.log("placements : ", placements);
+      
 
       // case 1은 "단일 폴리곤 배열"을 바로 리턴해야 함
       if (caseId === 1) {
@@ -143,12 +150,17 @@ export default (_d) => new Promise(resolve => {
         const [sid, x, y] = placements[i];
         const pts = shape(sid);
 
+        console.log("pts : ", pts);
+        
+
         const poly = new Array(pts.length + 1);
         poly[0] = [x, y];
         for (let j = 0; j < pts.length; j++) poly[j + 1] = pts[j];
 
         res[i] = poly;
       }
+      console.log("res : ", res);
+      
       return res;
     };
 
@@ -156,6 +168,8 @@ export default (_d) => new Promise(resolve => {
     function getPattern(token) {
       if (!token) return null;
       const id = CASE_BY_HASH[H(token)];
+      console.log("id : ", id); // 10
+      
       return id ? build(id) : null; // 매칭 없으면 null
     }
 
