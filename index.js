@@ -14,6 +14,35 @@ import { reverseString } from "./module/reverseString.js";
 // HJZUTOXFQA // [72, 74, 90, 85, 84, 79, 88, 70, 81, 65]
 // JRPFIGSBDN // [74, 82, 80, 70, 73, 71, 83, 66, 68, 78]
 
+const eSet = [
+  "abc66a04",
+  "817ee384",
+  "fecb195f",
+  "ad27ef26",
+  "3292d5df",
+  "cff14059",
+  "f5d95a31",
+  "8875f72a",
+  "bbbe1cbc",
+  "6324b9a",
+];
+
+const fnv1a32 = (str) => {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i) & 0xff;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+};
+
+const bSet = eSet.map((item) => {
+  return (fnv1a32(item) ^ 0xA5A5A5A5) >>> 0
+});
+console.log(bSet);
+
+
+
 function __fnv1a32(str) {
   let h = 0x811c9dc5;
   for (let i = 0; i < str.length; i++) {
@@ -77,10 +106,9 @@ const vSet = [
   "wf3BNntK/1okdSbPC7Pfjqycyv4Hf0buzsurVDAw1BvyNb0z6pHfOMIasAydOOZSDfwV2LXELIr0apV/oMZps9KCY2oWbYj7SAvv3hU7Z3zlWI44lauAbEuJwe0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkCYHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==",
 ];
 
-for (const k of vSet) {
-  console.log(k.length);
-  
-}
+// for (const k of vSet) {
+//   console.log(k.length);
+// }
 
 // const __PAYLOADS = Object.create(null);
 // const hexStr = "0x" + (Number("0x" + __fnv1a32(numArr[0]).toString(16))).toString(16);
@@ -166,6 +194,6 @@ console.log(str.length);
   DIV.setAttribute("id", "container");
   document.body.appendChild(DIV);
 
-  await selectedCard("GIZFNPTSVK");
+  await selectedCard("6324b9a");
   // console.log("===== 다음 함수 실행 =============");
 })();

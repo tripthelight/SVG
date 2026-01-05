@@ -6,231 +6,170 @@ export default (_d) => new Promise(resolve => {
   try {
     const { nCode, encryptSize, SVG_NS, svg } = _d;
 
-    // - 입력 문자열(10개)은 코드에 평문으로 존재하지 않음 (해시로만 매칭)
-    // - 결과 배열도 코드에 직접 작성하지 않음 (암호화된 페이로드를 "수식(난독 PRNG+복호+파싱)"으로 복원)
-    /*
-    const __PAYLOADS = Object.create({
-      0x550b0f8c: "tYgZn8WQVDTzjwbgZ/VqLNbdp3kyXw==",
-      0xc47bb621: "gAAHMpXA6/4NinNwxU8040b3gbPb61vkz7EdI6UcJScpXyfwWM4=",
-      0xb8d8452d: "XqsmwUz+AG++leEZoVS3zK5MEi3x/LIdT/5mvY+RGsCuPszBfo0/pVRwUrAz" +
-      "8wA2IoOQz5Oc38i7j5lY7BNnIvIV2GZqrifghqV1l1pePC4RPRwdUYfp+Zka" +
-      "Y54=",
-      0x57e225f7: "EyrIiDsCXzq+h/dRgKrHDkVHYsfqPEGx/Lt0OZK8NHZ18sapBD6EYF9SJxSS" +
-      "EF5VSmcy38/ovf0GQwRq4iBwpH82UZuJGPvrJy7+8hNAi6ccDAOoEv8U50ac" +
-      "JDc=",
-      0xef349a13: "no0zFPciVKVwt9mAmJRTIRxVX7tfdxecfqjUDpFsUuCHyR5sBRG7v61Mhudq" +
-      "t8+9XIyQIU5b",
-      0x83af8ca7: "iPxF6D/eAUhBF/D6QMzUhCjnvOExPPXdEfyw2oPR07XIhLSlFZNczHEtlsPn" +
-      "RA8Zw+UJo4Kr3E//vQiMy86O4WHzHmFcBKPN77WhEJdxWLY7nXuDaAJo82kv" +
-      "BsnT3mHuv1j0rDZ4imvcU90OqJobZ+OF3hAfdq8LXlDE4Y0m4KnYKsvpwWEA" +
-      "s46EkOI=",
-      0x73f143c9: "EyuDAmZZyfGG2j4WZbf+6ezyfxYVaATuRs31WWSnhGgPQUTKhzQkiJmDlJJi" +
-      "snCW5Iofl3YUZ3tn9zN0",
-      0x1bf3e70b: "lnOsUS7somuJdS8zEahhHPC1YrFfUhwJKZpt74m298ekfQ5/QSfEbkWz22xQ" +
-      "mYd61sML1pnCnLqvPm/bIj+hVw2Xdh7zPjLrMkefh41FU8vMnUMyVzQ=",
-      0xe3d01ebf: "2TgAVeNdpoA+F4M/T9oqpZOw9xK63nVgkfuM8z70N1t8bnFr2N9pOmMM7oh2" +
-      "1M74WEADtjuBs/08Q2jyaVJOzLL9tqDBpU023X3flINLXu4O+RJa6GAJD8SV" +
-      "0R7zhktDAGIRm3NVpPFDPaUrV/jrsH9THNhJxXjOUeygPBDjVIgIK3ZMOeeS" +
-      "gZv9rDY=",
-      0x5a916730: "wf3BNntK/1okdSbPC7Pfjqycyv4Hf0buzsurVDAw1BvyNb0z6pHfOMIasAyd" +
-      "OOZSDfwV2LXELIr0apV/oMZps9KCY2oWbYj7SAvv3hU7Z3zlWI44lauAbEuJ" +
-      "we0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkC" +
-      "YHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==",
-    });
-    */
+    
 
-    const __PAYLOADS = Object.create(null);
 
-    // key = FNV-1a 32-bit hash (입력 문자열의 해시), value = 암호화된(base64) 바이너리
-    __PAYLOADS[0x550b0f8c] = "tYgZn8WQVDTzjwbgZ/VqLNbdp3kyXw==";
-    __PAYLOADS[0xc47bb621] = "gAAHMpXA6/4NinNwxU8040b3gbPb61vkz7EdI6UcJScpXyfwWM4=";
 
-    __PAYLOADS[0xb8d8452d] =
-      "XqsmwUz+AG++leEZoVS3zK5MEi3x/LIdT/5mvY+RGsCuPszBfo0/pVRwUrAz" +
-      "8wA2IoOQz5Oc38i7j5lY7BNnIvIV2GZqrifghqV1l1pePC4RPRwdUYfp+Zka" +
-      "Y54=";
-
-    __PAYLOADS[0x57e225f7] =
-      "EyrIiDsCXzq+h/dRgKrHDkVHYsfqPEGx/Lt0OZK8NHZ18sapBD6EYF9SJxSS" +
-      "EF5VSmcy38/ovf0GQwRq4iBwpH82UZuJGPvrJy7+8hNAi6ccDAOoEv8U50ac" +
-      "JDc=";
-
-    __PAYLOADS[0xef349a13] =
-      "no0zFPciVKVwt9mAmJRTIRxVX7tfdxecfqjUDpFsUuCHyR5sBRG7v61Mhudq" +
-      "t8+9XIyQIU5b";
-
-    __PAYLOADS[0x83af8ca7] =
-      "iPxF6D/eAUhBF/D6QMzUhCjnvOExPPXdEfyw2oPR07XIhLSlFZNczHEtlsPn" +
-      "RA8Zw+UJo4Kr3E//vQiMy86O4WHzHmFcBKPN77WhEJdxWLY7nXuDaAJo82kv" +
-      "BsnT3mHuv1j0rDZ4imvcU90OqJobZ+OF3hAfdq8LXlDE4Y0m4KnYKsvpwWEA" +
-      "s46EkOI=";
-
-    __PAYLOADS[0x73f143c9] =
-      "EyuDAmZZyfGG2j4WZbf+6ezyfxYVaATuRs31WWSnhGgPQUTKhzQkiJmDlJJi" +
-      "snCW5Iofl3YUZ3tn9zN0";
-
-    __PAYLOADS[0x1bf3e70b] =
-      "lnOsUS7somuJdS8zEahhHPC1YrFfUhwJKZpt74m298ekfQ5/QSfEbkWz22xQ" +
-      "mYd61sML1pnCnLqvPm/bIj+hVw2Xdh7zPjLrMkefh41FU8vMnUMyVzQ=";
-
-    __PAYLOADS[0xe3d01ebf] =
-      "2TgAVeNdpoA+F4M/T9oqpZOw9xK63nVgkfuM8z70N1t8bnFr2N9pOmMM7oh2" +
-      "1M74WEADtjuBs/08Q2jyaVJOzLL9tqDBpU023X3flINLXu4O+RJa6GAJD8SV" +
-      "0R7zhktDAGIRm3NVpPFDPaUrV/jrsH9THNhJxXjOUeygPBDjVIgIK3ZMOeeS" +
-      "gZv9rDY=";
-
-    __PAYLOADS[0x5a916730] =
-      "wf3BNntK/1okdSbPC7Pfjqycyv4Hf0buzsurVDAw1BvyNb0z6pHfOMIasAyd" +
-      "OOZSDfwV2LXELIr0apV/oMZps9KCY2oWbYj7SAvv3hU7Z3zlWI44lauAbEuJ" +
-      "we0rZfDc7gbY+Ifpl7WsGoAndBkEDmA0DP1ln68rq78ZqUPJlA0ObqN6QRkC" +
-      "YHMVpsaYtKz1sIgAV3VhPO79vFC5cY3PwFMQUNrA7wrSozxBaA==";
-
-    function __fnv1a32(str) {
-      let h = 0x811c9dc5;
-      for (let i = 0; i < str.length; i++) {
-        h ^= str.charCodeAt(i) & 0xff;
-        h = Math.imul(h, 0x01000193) >>> 0;
-      }
-      return h >>> 0;
-    }
-
-    function __xorshift32(x) {
-      x >>>= 0;
-      x ^= (x << 13) >>> 0;
-      x ^= x >>> 17;
-      x ^= (x << 5) >>> 0;
-      return x >>> 0;
-    }
-
-    // “어려운 수식” 기반 바이트 복호화(키스트림 생성)
-    function __decryptInPlace(u8, seed) {
-      let s = (seed ^ 0xa5a5a5a5) >>> 0;
-
-      for (let i = 0; i < u8.length; i++) {
-        // i*0x9E3779B9 누산 + xorshift + 비선형 혼합
-        const add = Math.imul(i, 0x9e3779b9) >>> 0;
-        s = __xorshift32((s + add) >>> 0);
-
-        const rot = ((s >>> 16) | (s << 16)) >>> 0;
-        const mix = (Math.imul(s, 0x27d4eb2d) ^ rot) >>> 0;
-        const k = mix & 0xff;
-
-        u8[i] ^= k;
-      }
-    }
-
-    function __b64ToU8(b64) {
-      // 브라우저: atob 사용
-      const bin = atob(b64);
-      const out = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i) & 0xff;
-      return out;
-    }
-
-    function __i16LE(dv, off) {
-      return dv.getInt16(off, true);
-    }
-
-    function __unscale(i16) {
-      // 스케일(×10) 복원 + “의미 없는 0항”을 섞어 수식 난도를 올림 (값은 그대로)
-      const q = i16 / 10;
-      const z = Math.sqrt(2) - Math.sqrt(2); // 0
-      return Math.round((q + z) * 10) / 10;
-    }
-
-    function __unpack(u8) {
-      const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
-      let p = 0;
-
-      const depth = dv.getUint8(p++);
-
-      if (depth !== 1 && depth !== 2 && depth !== 3) throw new Error("bad payload");
-
-      // counts 읽기
-      let groupCount = 0;
-      let pathCount = 0;
-      let pathsPerGroup = null;
-      let lens = null; // depth2: [len...], depth3: [[len...], ...]
-
-      if (depth === 1) {
-        const n = dv.getUint8(p++);
-        const out = new Array(n);
-        for (let i = 0; i < n; i++) {
-          const x = __unscale(__i16LE(dv, p));
-          const y = __unscale(__i16LE(dv, p + 2));
-          p += 4;
-          out[i] = [x, y];
+    function buildPath(token) {
+      // 1) token -> 32bit key (원문 문자열은 코드에 없음)
+      const fnv1a32 = (str) => {
+        let h = 0x811c9dc5;
+        for (let i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i) & 0xff;
+          h = Math.imul(h, 0x01000193) >>> 0;
         }
+        return h >>> 0;
+      };
+
+      const KEY_XOR = 0xA5A5A5A5;
+      const key = (fnv1a32(String(token)) ^ KEY_XOR) >>> 0;
+
+      // 2) “리턴 배열”은 코드에 직접 쓰지 않고, 난독화된 페이로드(바이너리 base64)로만 보관
+      //    (값은 수식으로 복원)
+      const DATA_PACK = [
+        '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'
+      ].join('|');
+
+      const SHAPE_PACK = [
+        'BQA=',
+        'CQA=',
+        '//8CAAsACwA=',
+        '//8CAAsACwA=',
+        'DQA=',
+        '//8CABEAEQA=',
+        '//8CAAcABwA=',
+        'FQA=',
+        '//8CABEAEQA=',
+        '//8CAP//AgAGAA4A//8CABAABQA='
+      ].join('|');
+
+      // 3) token 원문 없이(문자열 직접 노출 없이) 선택만 수행
+      // const CASE = {
+      //   4037978665: 1, // (fnv1a32("OEJNIHMKXT") ^ 0xA5A5A5A5) >>> 0
+      //   1641943940: 2,
+      //   494788744: 3,
+      //   4064772178: 4,
+      //   1251033014: 5,
+      //   638200066: 6,
+      //   3595888236: 7,
+      //   3193324206: 8,
+      //   1182120730: 9,
+      //   4281647765: 10
+      // };
+      const CASE = {
+        2179877959: 1,
+        267243455: 2,
+        2469785277: 3,
+        1722792345: 4,
+        1256322563: 5,
+        4136858122: 6,
+        1523635824: 7,
+        3675746130: 8,
+        1430564634: 9,
+        692104513: 10,
+      };
+
+      const idx = CASE[key];
+      if (!idx) return null;
+
+      // 4) base64 -> bytes
+      const b64ToBytes = (b64) => {
+        const bin = atob(b64);
+        const out = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i) & 255;
         return out;
-      }
+      };
 
-      if (depth === 2) {
-        pathCount = dv.getUint8(p++);
-        lens = new Array(pathCount);
-        for (let i = 0; i < pathCount; i++) lens[i] = dv.getUint8(p++);
+      // 5) “매우 어려운 수식” 느낌으로 값 복원 (정확히 원래 값으로 돌아오도록 설계)
+      const A = 31337n;
+      const B = 12345n;
+      const K = 999983n; // 의미 없는 소수(노이즈)
 
-        const out = new Array(pathCount);
-        for (let pi = 0; pi < pathCount; pi++) {
-          const n = lens[pi];
-          const path = new Array(n);
-          for (let i = 0; i < n; i++) {
-            const x = __unscale(__i16LE(dv, p));
-            const y = __unscale(__i16LE(dv, p + 2));
-            p += 4;
-            path[i] = [x, y];
-          }
-          out[pi] = path;
-        }
+      const recoverInt = (w) => {
+        // stored = scaledInt*A + B  (scaledInt = value*10)
+        // scaledInt = ((stored - B) * K) / (A * K)
+        const W = BigInt(w);
+        const t = (W - B) * K;
+        const n = t / (A * K);
+        return Number(n);
+      };
+
+      const decodeI32 = (bytes) => {
+        const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const out = [];
+        for (let off = 0; off < bytes.length; off += 4) out.push(dv.getInt32(off, true));
         return out;
-      }
+      };
 
-      // depth === 3
-      groupCount = dv.getUint8(p++);
-      pathsPerGroup = new Array(groupCount);
-      lens = new Array(groupCount);
+      const decodeI16 = (bytes) => {
+        const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const out = [];
+        for (let off = 0; off < bytes.length; off += 2) out.push(dv.getInt16(off, true));
+        return out;
+      };
 
-      for (let gi = 0; gi < groupCount; gi++) {
-        const pc = dv.getUint8(p++);
-        pathsPerGroup[gi] = pc;
-        const l = new Array(pc);
-        for (let pi = 0; pi < pc; pi++) l[pi] = dv.getUint8(p++);
-        lens[gi] = l;
-      }
-
-      const out = new Array(groupCount);
-      for (let gi = 0; gi < groupCount; gi++) {
-        const pc = pathsPerGroup[gi];
-        const grp = new Array(pc);
-        for (let pi = 0; pi < pc; pi++) {
-          const n = lens[gi][pi];
-          const path = new Array(n);
-          for (let i = 0; i < n; i++) {
-            const x = __unscale(__i16LE(dv, p));
-            const y = __unscale(__i16LE(dv, p + 2));
-            p += 4;
-            path[i] = [x, y];
+      // shape는 “중첩 구조”만 저장 (리턴 배열 값 자체는 저장하지 않음)
+      // 인코딩 규칙: -1, len, ... (리스트 시작), 양수면 leaf(포인트 개수)
+      const parseShape = (arr) => {
+        let p = 0;
+        const walk = () => {
+          const t = arr[p++];
+          if (t === -1) {
+            const n = arr[p++];
+            const r = [];
+            for (let i = 0; i < n; i++) r.push(walk());
+            return r;
           }
-          grp[pi] = path;
-        }
-        out[gi] = grp;
+          return t;
+        };
+        return walk();
+      };
+
+      const dataB64 = DATA_PACK.split('|')[idx - 1];
+      const shapeB64 = SHAPE_PACK.split('|')[idx - 1];
+
+      const rawI32 = decodeI32(b64ToBytes(dataB64));
+      const flat = [];
+      for (let i = 0; i < rawI32.length; i++) {
+        const scaledInt = recoverInt(rawI32[i]);
+        // 수식 노이즈(값 유지)
+        flat.push((scaledInt + scaledInt * 0) / 10);
       }
-      return out;
+
+      const shape = parseShape(decodeI16(b64ToBytes(shapeB64)));
+
+      // flat -> 최종 중첩 배열 복원
+      let cursor = 0;
+      const build = (sh) => {
+        if (typeof sh === 'number') {
+          const pts = [];
+          for (let i = 0; i < sh; i++) {
+            const x = flat[cursor++];
+            const y = flat[cursor++];
+            pts.push([x, y]);
+          }
+          return pts;
+        }
+        const out = [];
+        for (let i = 0; i < sh.length; i++) out.push(build(sh[i]));
+        return out;
+      };
+
+      return build(shape);
     }
 
-    // ✅ 요구사항 함수
-    function getResultArray(secretKey) {
-      if (typeof secretKey !== "string") throw new TypeError("string required");
 
-      const h = __fnv1a32(secretKey);
-      const b64 = __PAYLOADS[h];
-      console.log("b64 >>>>>>>>> ", b64);
-      if (!b64) throw new Error("unknown key");
 
-      const bytes = __b64ToU8(b64);
-      __decryptInPlace(bytes, h);
 
-      return __unpack(bytes);
-    }
 
     /**
      * shape(중첩 배열)을 SVG path 문자열 배열로 변환합니다.
@@ -315,8 +254,12 @@ export default (_d) => new Promise(resolve => {
       f: document.createElementNS(safeBase64Decode(SVG_NS), "path"),
       r: document.createElementNS(safeBase64Decode(SVG_NS), "path")
     };
+
+    const dd = buildPath(nCode);
+    console.log(dd);
     
-    const d_num = toSvgPaths(getResultArray(nCode));
+    
+    const d_num = toSvgPaths(dd);
     
     if (d_num.length === 1) {
       dAdd(pathNumber.f, editPos.f(d_num[0], nCode));

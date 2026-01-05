@@ -1197,7 +1197,7 @@ function drawNumber() {
     return x >>> 0;
   }
 
-  // “어려운 수식” 기반 바이트 복호화(키스트림 생성)
+  // "어려운 수식" 기반 바이트 복호화(키스트림 생성)
   function __decryptInPlace(u8, seed) {
     let s = (seed ^ 0xa5a5a5a5) >>> 0;
 
@@ -1227,7 +1227,7 @@ function drawNumber() {
   }
 
   function __unscale(i16) {
-    // 스케일(×10) 복원 + “의미 없는 0항”을 섞어 수식 난도를 올림 (값은 그대로)
+    // 스케일(×10) 복원 + "의미 없는 0항"을 섞어 수식 난도를 올림 (값은 그대로)
     const q = i16 / 10;
     const z = Math.sqrt(2) - Math.sqrt(2); // 0
     return Math.round((q + z) * 10) / 10;

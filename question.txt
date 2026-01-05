@@ -12,7 +12,8 @@
 
 ※ 필수사항 :
 1. 함수에서 리턴시키는 배열을 코드에 직접 작성하지 말고, 매우 어려운 수식에 의한 결과값으로 리턴시켜라.
-2. 함수의 인자로 받는 'OEJNIHMKXT', 'GIZFNPTSVK', 'OCNLTGMFKS', 'DKHOXMIVEA', 'PDBIZUOFMJ', 'KFOUDBRZVI', 'MIPGSHDAUF', 'SJRWTDGUXH', 'HJZUTOXFQA' 'JRPFIGSBDN' 문자들은 코드에 직접 노출되면 안된다.
+2. 함수의 인자로 받는 'OEJNIHMKXT', 'GIZFNPTSVK', 'OCNLTGMFKS', 'DKHOXMIVEA', 'PDBIZUOFMJ', 'KFOUDBRZVI', 'MIPGSHDAUF', 'SJRWTDGUXH', 'HJZUTOXFQA' 'JRPFIGSBDN' 10개 묶음의 문자들은 현재 질문을 위한 예시이고, 다른 문자들로 매번 바뀐다. 그래서 리턴되는 배열은 함수의 인자에 영향을 받으면 안된다.
+3. 함수의 인자로 받는 'OEJNIHMKXT', 'GIZFNPTSVK', 'OCNLTGMFKS', 'DKHOXMIVEA', 'PDBIZUOFMJ', 'KFOUDBRZVI', 'MIPGSHDAUF', 'SJRWTDGUXH', 'HJZUTOXFQA' 'JRPFIGSBDN' 10개 묶음의 예시 문자들은 코드에 직접 노출되면 안된다.
 
 작업환경은 브라우저환경 클라이언트 코드다.
 위 조건에 맞는 javascript 함수를 작성해라!
@@ -71,8 +72,9 @@ const drs = [ [14,0],[5,8],[0,20],[8,0],[9,8],[-8,-2],[-19,0],[-9,-8],[9,2],[5,0
 
 ※ 필수사항 :
 1. d, dr, ds, drs 변수에 해당하는 배열은 코드에 직접 작성하지 말고, 암호화 시켜라.
-1. 함수에서 리턴시키는 배열을 코드에 직접 작성하지 말고, 매우 어려운 수식에 의한 결과값으로 리턴시켜라.
-2. 함수의 인자로 받는 'OEJNIHMKXT', 'GIZFNPTSVK', 'OCNLTGMFKS', 'DKHOXMIVEA', 'PDBIZUOFMJ', 'KFOUDBRZVI', 'MIPGSHDAUF', 'SJRWTDGUXH', 'HJZUTOXFQA' 'JRPFIGSBDN' 문자들은 코드에 직접 노출되면 안된다.
+2. 함수에서 리턴시키는 배열을 코드에 직접 작성하지 말고, 매우 어려운 수식에 의한 결과값으로 리턴시켜라.
+3. 함수의 인자로 받는 'OEJNIHMKXT', 'GIZFNPTSVK', 'OCNLTGMFKS', 'DKHOXMIVEA', 'PDBIZUOFMJ', 'KFOUDBRZVI', 'MIPGSHDAUF', 'SJRWTDGUXH', 'HJZUTOXFQA' 'JRPFIGSBDN' 문자들은 현재 질문을 위한 예시이고, 10개 묶음의 다른 문자들로 매번 바뀐다.
+4. 함수의 인자로 받는 'OEJNIHMKXT', 'GIZFNPTSVK', 'OCNLTGMFKS', 'DKHOXMIVEA', 'PDBIZUOFMJ', 'KFOUDBRZVI', 'MIPGSHDAUF', 'SJRWTDGUXH', 'HJZUTOXFQA' 'JRPFIGSBDN' 10개 묶음의 예시 문자들은 코드에 직접 노출되면 안된다.
 
 작업환경은 브라우저환경 클라이언트 코드다.
 위 조건에 맞는 javascript 함수를 작성해라!
