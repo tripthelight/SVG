@@ -125,3 +125,240 @@ SVG를 먼저 그리고, SVG 내부에 숫자와 문양을 그린 뒤 다음 함
 더 효과적인 전략이 있다면 제시해라.
 
 /////////////////////////////////////////////////////////////
+
+const arr = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t'];
+
+// //////////////////////////////////////////////////////////////
+
+※ 요구사항 :
+1. arr 배열을 shuffled 시켜라.
+2. shuffled된 새로운 배열이, 예를들어 ['h', 'q', 'c', 'd', 'i', 'p', 'j', 'l', 'm', 'o', 'e', 'r', 't', 'b', 'k', 'a', 's', 'g', 'n', 'f'] 배열이 되었을 때, "h" ~ "o"는 순서대로 0~9이고, 마찬가지로 "e" ~ "f"가 0~9이다.
+3. 0~9숫자가 모두 한 번씩 들어간 숫자(ex. 6148520379)를 만들어라,
+4. 만든 6148520379에 매칭되는 "sqinachdgo" 문자열을 만들어라.
+5. 만들어신 숫자와 문자열을 리턴시키는 javascript 함수를 작성해라.
+
+/////////////////////////////////////////////////////////////
+
+const osditudxdd = "bbd834e6"; // 숫자 3
+const pzocifudte = "d84660e6"; // 숫자 7
+const pviduthjdx = "d654424c"; // 숫자 5
+const divucytjde = "42a2f893"; // 숫자 1
+const uvoidutjnm = "e2029927"; // 숫자 2
+const eifubydxae = "5c274226"; // 숫자 9
+const pvodutmedx = "2a55fed5"; // 숫자 10
+const yvtdjtidjv = "ce722dfa"; // 숫자 8
+const voditjeudf = "804ab40f"; // 숫자 6
+const cpvoditmed = "fd24b304"; // 숫자 4
+
+// n1이 나의 숫자 / n2가 상대의 숫자
+function compare(n1, n2) {
+  if (n1 === n2) return "비김";
+
+  switch (n1) {
+    case osditudxdd: { // 3
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm // 2
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case pzocifudte: { // 7
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf // 6
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case pviduthjdx: { // 5
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed // 4
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case divucytjde: { // 1
+      if (
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case uvoidutjnm: { // 2
+      if (
+        n2 === divucytjde // 1
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case eifubydxae: { // 9
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv // 8
+      ) {
+        return "내가 이김"
+      } else if(
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case pvodutmedx: { // 10
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae // 9
+      ) {
+        return "내가 이김"
+      }
+      break;
+    }
+    case yvtdjtidjv: { // 8
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte // 7
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case voditjeudf: { // 6
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd || // 3
+        n2 === cpvoditmed || // 4
+        n2 === pviduthjdx // 5
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+    case cpvoditmed: { // 4
+      if (
+        n2 === divucytjde || // 1
+        n2 === uvoidutjnm || // 2
+        n2 === osditudxdd // 3
+      ) {
+        return "내가 이김"
+      } else if (
+        n2 === pviduthjdx || // 5
+        n2 === voditjeudf || // 6
+        n2 === pzocifudte || // 7
+        n2 === yvtdjtidjv || // 8
+        n2 === eifubydxae || // 9
+        n2 === pvodutmedx // 10
+      ) {
+        return "내가 짐"
+      }
+      break;
+    }
+
+    default:
+      break;
+  }
+};
+
+
+const res = compare(uvoidutjnm, eifubydxae);
+console.log(res); // "내가 이김" or "내가 짐" or "비김"
+
+// ////////////////////////////////////////////
+
+두 개의 숫자(내 숫자 / 상대 숫자)를 받아서 승/패/비김 을 가리는 로직이다.
+나는 내 코드에 숫자를 직접적으로 노출시키지 않기위해 랜덤한 문자로 만들어 비교시켰다.
+osditudxdd ~ cpvoditmed 의 변수명과 할당된 문자열은 고정된것이 아니라, 매 번 바뀐다.
+숫자를 직접적으로 노출시키지는 않았지만, 위의 코드는 해석이 쉽고, 반복되는 코드가 매무 많다.
+
+※ 요구사항 :
+1. 숫자를 직접 노출시키지 마라.
+1. 코드로직은 분석이 매우 어렵도록 복잡해야 한다.
+2. 코드의 복잡도는 최대화하고, 연산은 최소화 해라.
+
+/////////////////////////////////////////////////////////////

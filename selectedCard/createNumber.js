@@ -6,10 +6,6 @@ export default (_d) => new Promise(resolve => {
   try {
     const { nCode, encryptSize, SVG_NS, svg } = _d;
 
-    
-
-
-
     function buildPath(token) {
       // 1) token -> 32bit key (원문 문자열은 코드에 없음)
       const fnv1a32 = (str) => {
@@ -166,10 +162,6 @@ export default (_d) => new Promise(resolve => {
 
       return build(shape);
     }
-
-
-
-
 
     /**
      * shape(중첩 배열)을 SVG path 문자열 배열로 변환합니다.
