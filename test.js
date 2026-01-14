@@ -1,185 +1,191 @@
-const TOKENS = [ // 0 부터 9의 순서로 정렬해서 만들것
-  "8917b4cc", // 1
-  "b3534d0d", // 2
-  "4140d33e", // 3
-  "eb5f99e4", // 4
-  "29b7d578", // 5
-  "bd416fa7", // 6
-  "37326fcd", // 7
-  "a5670011", // 8
-  "d0cd190d", // 9
-  "96319eef", // 10
-];
+function compareCase() {
+  const TOKENS = [ // 0 부터 9의 순서로 정렬해서 만들것
+    "8917b4cc", // 1
+    "b3534d0d", // 2
+    "4140d33e", // 3
+    "eb5f99e4", // 4
+    "29b7d578", // 5
+    "bd416fa7", // 6
+    "37326fcd", // 7
+    "a5670011", // 8
+    "d0cd190d", // 9
+    "96319eef", // 10
+  ];
 
-// compare 함수에서 사용되는 BLOB 키 생성
-function makeBLOB() {
-  const SEP = "\u001f";
-  const SECRET = ["@ba", "ttletwo", ":cmp", ":v", "1"].join("");
-  
-  const seedFrom = (s) => {
-    let x = 0;
-    for (let i = 0; i < s.length; i++) x = (((x << 5) - x) + s.charCodeAt(i)) | 0;
-    return x >>> 0;
-  };
-  
-  const xorshift32 = (x) => {
-    x ^= (x << 13);
-    x ^= (x >>> 17);
-    x ^= (x << 5);
-    return x >>> 0;
-  };
-  
-  const u8ToB64 = (u8) => {
-    // Uint8Array -> base64 (브라우저)
-    let bin = "";
-    const chunk = 0x8000; // call stack 방지용 chunk
-    for (let i = 0; i < u8.length; i += chunk) {
-      bin += String.fromCharCode(...u8.subarray(i, i + chunk));
-    }
-    return btoa(bin);
-  };
-  
-  const encodeTokensToBlob = (tokens, secret) => {
-    const payload = tokens.join(SEP);
-  
-    // payload -> Uint8Array
-    const data = new TextEncoder().encode(payload);
-  
-    let x = seedFrom(secret);
-    const ks = new Uint8Array(4);
-  
-    for (let i = 0; i < data.length; i++) {
-      if ((i & 3) === 0) {
-        x = xorshift32(x);
-        ks[0] = (x >>> 0) & 255;
-        ks[1] = (x >>> 8) & 255;
-        ks[2] = (x >>> 16) & 255;
-        ks[3] = (x >>> 24) & 255;
+  // compare 함수에서 사용되는 BLOB 키 생성
+  function makeBLOB() {
+    const SEP = "\u001f";
+    const SECRET = ["@ba", "ttletwo", ":cmp", ":v", "1"].join("");
+    
+    const seedFrom = (s) => {
+      let x = 0;
+      for (let i = 0; i < s.length; i++) x = (((x << 5) - x) + s.charCodeAt(i)) | 0;
+      return x >>> 0;
+    };
+    
+    const xorshift32 = (x) => {
+      x ^= (x << 13);
+      x ^= (x >>> 17);
+      x ^= (x << 5);
+      return x >>> 0;
+    };
+    
+    const u8ToB64 = (u8) => {
+      // Uint8Array -> base64 (브라우저)
+      let bin = "";
+      const chunk = 0x8000; // call stack 방지용 chunk
+      for (let i = 0; i < u8.length; i += chunk) {
+        bin += String.fromCharCode(...u8.subarray(i, i + chunk));
       }
-      data[i] ^= ks[i & 3];
-    }
-  
-    return u8ToB64(data);
-  };
-  
-  // const BLOB = encodeTokensToBlob(TOKENS, SECRET);
-  // console.log(BLOB);
-
-  return encodeTokensToBlob(TOKENS, SECRET);;
-};
-
-// -------------------------------------------------
-
-const compare = (() => {
-  // 숫자 리터럴(0,1,2...)도 직접 쓰기 싫으면 이런 방식으로 만들 수 있습니다.
-  const Z = +[];        // 0
-  const O = +!+[];      // 1
-
-  // 2,3,4,5,8,13,17 등은 "문자열 길이"로 만들기 (숫자 리터럴 없음)
-  const THREE = "xxx".length;
-  const FOUR = "xxxx".length;
-  const FIVE = "xxxxx".length;
-  const EIGHT = "xxxxxxxx".length;
-  const S13 = "xxxxxxxxxxxxx".length;
-  const S17 = "xxxxxxxxxxxxxxxxx".length;
-
-  // 결과 문자열도 노출 최소화하고 싶으면 조각으로 합치기
-  const R_DRAW = "비" + "김";
-  const R_WIN = "내" + "가 " + "이" + "김";
-  const R_LOSE = "내" + "가 " + "짐";
-
-  // 토큰 목록(약 -> 강 순서)을 숨겨둔 blob (base64)
-  // ※ 이 값은 토큰이 바뀔 때마다 다시 생성해서 바꿔 끼우시면 됩니다.
-  // const BLOB = "0ZfAPu0chwiDPfoqY+eYGFM1d16pB1aGo6MFxwS5gX/XXFLGf5IlmjhGPFrCVOHopUJIhh3wJrfGp38GTLz/r7l03qb6GUUQ7BfD+8JMYfUF+clQAA==";
-  const BLOB = makeBLOB();
-
-  // 복호화 키도 그대로 두기 싫으면 조각내기
-  const SECRET = ["@ba", "ttletwo", ":cmp", ":v", "1"].join("");
-
-  // 문자열 -> 32비트 seed (djb2 비슷한 형태, 상수 없이)
-  const seedFrom = (s) => {
-    let x = Z;
-    for (let i = Z; i < s.length; i += O) {
-      x = (((x << FIVE) - x) + s.charCodeAt(i)) | Z;
-    }
-    return x >>> Z;
-  };
-
-  // xorshift32 (shift 값도 숫자 리터럴 없이)
-  const xorshift32 = (x) => {
-    x ^= (x << S13);
-    x ^= (x >>> S17);
-    x ^= (x << FIVE);
-    return x >>> Z;
-  };
-
-  // base64 -> Uint8Array (브라우저/Node 호환)
-  const b64ToU8 = (b64) => {
-    if (typeof atob === "function") {
-      const bin = atob(b64);
-      const u8 = new Uint8Array(bin.length);
-      for (let i = Z; i < bin.length; i += O) u8[i] = bin.charCodeAt(i);
-      return u8;
-    }
-    // Node
-    return Uint8Array.from(Buffer.from(b64, "base64"));
-  };
-
-  const SEP = "\u001f"; // 구분자(표시 잘 안 나는 문자)
-
-  // blob 복호화 -> 토큰 배열(약->강 순서)
-  const decodeTokens = (b64, secret) => {
-    const data = b64ToU8(b64);
-    const mask = (O << EIGHT) - O;
-
-    let x = seedFrom(secret);
-    const ks = new Uint8Array(FOUR);
-
-    // XOR 스트림 복호화 (초기화 1회만)
-    for (let i = Z; i < data.length; i += O) {
-      if ((i & (FOUR - O)) === Z) {
-        x = xorshift32(x);
-
-        // x의 4바이트를 ks에 분해 (리터럴 없이)
-        for (let k = Z; k < FOUR; k += O) {
-          ks[k] = (x >>> (k * EIGHT)) & mask;
+      return btoa(bin);
+    };
+    
+    const encodeTokensToBlob = (tokens, secret) => {
+      const payload = tokens.join(SEP);
+    
+      // payload -> Uint8Array
+      const data = new TextEncoder().encode(payload);
+    
+      let x = seedFrom(secret);
+      const ks = new Uint8Array(4);
+    
+      for (let i = 0; i < data.length; i++) {
+        if ((i & 3) === 0) {
+          x = xorshift32(x);
+          ks[0] = (x >>> 0) & 255;
+          ks[1] = (x >>> 8) & 255;
+          ks[2] = (x >>> 16) & 255;
+          ks[3] = (x >>> 24) & 255;
         }
+        data[i] ^= ks[i & 3];
       }
-      data[i] = data[i] ^ ks[i & (FOUR - O)];
-    }
+    
+      return u8ToB64(data);
+    };
+    
+    // const BLOB = encodeTokensToBlob(TOKENS, SECRET);
+    // console.log(BLOB);
 
-    // bytes -> string (데이터가 짧으니 단순 변환)
-    let s = "";
-    for (let i = Z; i < data.length; i += O) s += String.fromCharCode(data[i]);
-
-    return s.split(SEP);
+    return encodeTokensToBlob(TOKENS, SECRET);;
   };
 
-  const tokens = decodeTokens(BLOB, SECRET);
+  // -------------------------------------------------
 
-  // token -> 순서 인덱스 Map
-  const idx = new Map();
-  for (let i = Z; i < tokens.length; i += O) idx.set(tokens[i], i);
+  const compare = (() => {
+    // 숫자 리터럴(0,1,2...)도 직접 쓰기 싫으면 이런 방식으로 만들 수 있습니다.
+    const Z = +[];        // 0
+    const O = +!+[];      // 1
 
-  // 최종 compare: Map 조회 + 비교만 함
-  return (n1, n2) => {
-    if (n1 === n2) return R_DRAW;
+    // 2,3,4,5,8,13,17 등은 "문자열 길이"로 만들기 (숫자 리터럴 없음)
+    const THREE = "xxx".length;
+    const FOUR = "xxxx".length;
+    const FIVE = "xxxxx".length;
+    const EIGHT = "xxxxxxxx".length;
+    const S13 = "xxxxxxxxxxxxx".length;
+    const S17 = "xxxxxxxxxxxxxxxxx".length;
 
-    const a = idx.get(n1);
-    const b = idx.get(n2);
+    // 결과 문자열도 노출 최소화하고 싶으면 조각으로 합치기
+    const R_DRAW = "비" + "김";
+    const R_WIN = "내" + "가 " + "이" + "김";
+    const R_LOSE = "내" + "가 " + "짐";
 
-    // 예상치 못한 값 방어 (원하면 제거 가능)
-    if (a === undefined || b === undefined) {
-      throw new Error("unknown token");
-    }
+    // 토큰 목록(약 -> 강 순서)을 숨겨둔 blob (base64)
+    // ※ 이 값은 토큰이 바뀔 때마다 다시 생성해서 바꿔 끼우시면 됩니다.
+    // const BLOB = "0ZfAPu0chwiDPfoqY+eYGFM1d16pB1aGo6MFxwS5gX/XXFLGf5IlmjhGPFrCVOHopUJIhh3wJrfGp38GTLz/r7l03qb6GUUQ7BfD+8JMYfUF+clQAA==";
+    const BLOB = makeBLOB();
 
-    // 약->강 순서에서 뒤가 더 강함
-    return a > b ? R_WIN : R_LOSE;
-  };
-})();
+    // 복호화 키도 그대로 두기 싫으면 조각내기
+    const SECRET = ["@ba", "ttletwo", ":cmp", ":v", "1"].join("");
 
-// ------------------- 사용 예 -------------------
-// console.log(compare("b3534d0d", "bd416fa7"));
+    // 문자열 -> 32비트 seed (djb2 비슷한 형태, 상수 없이)
+    const seedFrom = (s) => {
+      let x = Z;
+      for (let i = Z; i < s.length; i += O) {
+        x = (((x << FIVE) - x) + s.charCodeAt(i)) | Z;
+      }
+      return x >>> Z;
+    };
+
+    // xorshift32 (shift 값도 숫자 리터럴 없이)
+    const xorshift32 = (x) => {
+      x ^= (x << S13);
+      x ^= (x >>> S17);
+      x ^= (x << FIVE);
+      return x >>> Z;
+    };
+
+    // base64 -> Uint8Array (브라우저/Node 호환)
+    const b64ToU8 = (b64) => {
+      if (typeof atob === "function") {
+        const bin = atob(b64);
+        const u8 = new Uint8Array(bin.length);
+        for (let i = Z; i < bin.length; i += O) u8[i] = bin.charCodeAt(i);
+        return u8;
+      }
+      // Node
+      return Uint8Array.from(Buffer.from(b64, "base64"));
+    };
+
+    const SEP = "\u001f"; // 구분자(표시 잘 안 나는 문자)
+
+    // blob 복호화 -> 토큰 배열(약->강 순서)
+    const decodeTokens = (b64, secret) => {
+      const data = b64ToU8(b64);
+      const mask = (O << EIGHT) - O;
+
+      let x = seedFrom(secret);
+      const ks = new Uint8Array(FOUR);
+
+      // XOR 스트림 복호화 (초기화 1회만)
+      for (let i = Z; i < data.length; i += O) {
+        if ((i & (FOUR - O)) === Z) {
+          x = xorshift32(x);
+
+          // x의 4바이트를 ks에 분해 (리터럴 없이)
+          for (let k = Z; k < FOUR; k += O) {
+            ks[k] = (x >>> (k * EIGHT)) & mask;
+          }
+        }
+        data[i] = data[i] ^ ks[i & (FOUR - O)];
+      }
+
+      // bytes -> string (데이터가 짧으니 단순 변환)
+      let s = "";
+      for (let i = Z; i < data.length; i += O) s += String.fromCharCode(data[i]);
+
+      return s.split(SEP);
+    };
+
+    const tokens = decodeTokens(BLOB, SECRET);
+
+    // token -> 순서 인덱스 Map
+    const idx = new Map();
+    for (let i = Z; i < tokens.length; i += O) idx.set(tokens[i], i);
+
+    // 최종 compare: Map 조회 + 비교만 함
+    return (n1, n2) => {
+      if (n1 === n2) return R_DRAW;
+
+      const a = idx.get(n1);
+      const b = idx.get(n2);
+
+      // 예상치 못한 값 방어 (원하면 제거 가능)
+      if (a === undefined || b === undefined) {
+        throw new Error("unknown token");
+      }
+
+      // 약->강 순서에서 뒤가 더 강함
+      return a > b ? R_WIN : R_LOSE;
+    };
+  })();
+
+  // ------------------- 사용 예 -------------------
+  // console.log(compare("b3534d0d", "bd416fa7"));
+}
+
+// compareCase();
+
+console.clear();
 
 // ———————————————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————————
@@ -357,7 +363,7 @@ function makeRandomBit() {
   const na = new Map();
   na.set("odv4u3mfie", [ // NUM 1 : [93, 18, 85, 97, 89, 73]
     (((ba[0][0]^ba[0][1])&ba[0][2])<<4)|((((ba[0][3]<<2)|ba[0][4])^ba[0][5])&ba[0][2])&ba[0][6], // 93 의 복잡한 비트연산
-    (((((ba[0][7]^ba[0][8])&ba[0][9])<< 2)>>>2)^(ba[0][10]&0))|0, // 18 의 복잡한 비트연산
+    (((((ba[0][7]^ba[0][8])&ba[0][9])<< 2)>>>2)^(ba[0][25]&0))|0, // 18 의 복잡한 비트연산
     (((((ba[0][11]^ba[0][12])&ba[0][13])<<1)^ba[0][14])>>>0), // 85 의 복잡한 비트연산
     (((((1<<7)|(((ba[0][2]^ba[0][15])<<1)|(ba[0][0]&ba[0][16])))>>1)^ba[0][17])&0xff), // 97 의 복잡한 비트연산
     (((((ba[0][18]^ba[0][19])&0xff)>>>1)^(ba[0][20]<<2))&0xff), // 89 의 복잡한 비트연산
@@ -437,6 +443,8 @@ function makeRandomBit() {
 };
 // makeRandomBit();
 
+console.clear();
+
 // ———————————————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————————
@@ -482,74 +490,75 @@ function makeBit() {
     "odv4u3mfie", // NUM 1
     "p2vbjniew9", // NUM 2
     "df9vnae8dv", // NUM 3
+    "vaisn98djn", // NUM 4
+    "tiek3vjenm", // NUM 5
+    "obvnmen9dr", // NUM 6
+    "emv7venrac", // NUM 7
+    "ovnebe8dbr", // NUM 8
+    "dtvoen8dr1", // NUM 9
+    "ucvbe5mcv2", // NUM 10
   ];
 
-  const PARAMS = nCode[2];
-
   const nonOverlapArr = [
-    // 0000_0000_0000_0000_0000_0000_0000_0001 (1)
+    // 0000_0000_0000_0000_0000_0000_0000_0001 (1) // !$ 0
     ((((0b101101 ^ 0b101100) << 3) >>> 3) & 0b11111111) ^ 0,
-    // 0000_0000_0000_0000_0000_0000_0000_0010 (2)
+    // 0000_0000_0000_0000_0000_0000_0000_0010 (2) // !$ 1
     (((((0b1101 << 3) ^ 0b0100100) & 0b111111) >>> 2) ^ 0b0001) & 0b1111,
-    // 0000_0000_0000_0000_0000_0000_0000_0100 (4)
+    // 0000_0000_0000_0000_0000_0000_0000_0100 (4) // !$ 2
     (((((0b110010 ^ 0b110110) << 3) >>> 3) & 0b1111) | 0b0000) ^ 0b0000,
-    // 0000_0000_0000_0000_0000_0000_0000_1000 (8)
+    // 0000_0000_0000_0000_0000_0000_0000_1000 (8) // !$ 3
     ((((((0b101101 ^ 0b001001) & 0b111111) >>> 2) & 0b1110) ^ 0b0011) ^ 0b0011),
-    // 0000_0000_0000_0000_0000_0000_0001_0000 (16)
+    // 0000_0000_0000_0000_0000_0000_0001_0000 (16) // !$ 4
     (((((0b110011 ^ 0b101010) & 0b111111) >>> 2) ^ 0b000111) & 0b1111) << 4,
-    // 0000_0000_0000_0000_0000_0000_0010_0000 (32)
+    // 0000_0000_0000_0000_0000_0000_0010_0000 (32) // !$ 5
     (((((0b1010 | 0b0100) ^ 0b1100) & 0b0011) ^ (((0b1010 | 0b0100) ^ 0b1100) >>> 2)) << 4) & 0b111111,
-    // 0000_0000_0000_0000_0000_0000_0100_0000 (64)
+    // 0000_0000_0000_0000_0000_0000_0100_0000 (64) // !$ 6
     (((((0b1010 & 0b0101) ^ 0b0011) & 0b0001) << 6) | (0b1111111 & 0)) & 0b11111111,
-    // 0000_0000_0000_0000_0000_0000_1000_0000 (128)
+    // 0000_0000_0000_0000_0000_0000_1000_0000 (128) // !$ 7
     (((0b1010 << 4) | 0b0101) | 0b01011010) ^ ((((0b1010 << 4) | 0b0101) | 0b01011010) >>> 1),
-    // 0000_0000_0000_0000_0000_0001_0000_0000 (256)
+    // 0000_0000_0000_0000_0000_0001_0000_0000 (256) // !$ 8
     (0b1010 ^ 0b1011) << (((0b1111 & 0b0011) << 1) ^ 0b1110),
-    // 0000_0000_0000_0000_0000_0010_0000_0000 (512) // 10
+    // 0000_0000_0000_0000_0000_0010_0000_0000 (512) // !$ 9
     (((((0b110110 ^ 0b101011) & 0b111111) >>> 2) & 0b0011) ^ 0b0010) << 9,
-    // 0000_0000_0000_0000_0000_0100_0000_0000 (1024)
+    // 0000_0000_0000_0000_0000_0100_0000_0000 (1024) // !$ 10
     (((((0b1111 ^ 0b1110) << 12) ^ (1 << 15)) >>> 2) & ~(1 << 13)) | 0,
-    // 0000_0000_0000_0000_0000_1000_0000_0000 (2048)
+    // 0000_0000_0000_0000_0000_1000_0000_0000 (2048) // !$ 11
     ((((((0b110110 ^ 0b101011) & 0b111111) >>> 4) & 0b11) ^ 0b10) >>> 1) << 11,
-    // 0000_0000_0000_0000_0001_0000_0000_0000 (4096)
+    // 0000_0000_0000_0000_0001_0000_0000_0000 (4096) // !$ 12
     ((((0b11011001 ^ 0b10101101) & 0b00000111) << 10) >>> 0),
-    // 0000_0000_0000_0000_0010_0000_0000_0000 (8192)
+    // 0000_0000_0000_0000_0010_0000_0000_0000 (8192) // !$ 13
     (((0b101011 ^ 0b101010) & 0b1) << ((0b1110 & 0b1101) ^ 0b0001)) >>> 0,
-    // 0000_0000_0000_0000_0100_0000_0000_0000 (16384)
+    // 0000_0000_0000_0000_0100_0000_0000_0000 (16384) // !$ 14 
     ((((((((((0b1110 & 0b1011) ^ 0b1001) << 5) | (((0b1110 & 0b1011) ^ 0b1001) >>> 1)) & 0xff) ^ 0b01010101) & 0xff) & 0b00001111) ^ 0b00000101)) << 14,
-    // 0000_0000_0000_0000_1000_0000_0000_0000 (32768)
+    // 0000_0000_0000_0000_1000_0000_0000_0000 (32768) // !$ 15
     (((((0b101010 ^ 0b111011) & 0b111111) ^ 0b10000) << 11) << 4),
-    // 0000_0000_0000_0001_0000_0000_0000_0000 (65536)
+    // 0000_0000_0000_0001_0000_0000_0000_0000 (65536) // !$ 16 
     ((0xDEAD ^ 0xDEAC) << ((0x33 ^ 0x23) & 0b11111)) | 0,
-    // 0000_0000_0000_0010_0000_0000_0000_0000 (131072)
+    // 0000_0000_0000_0010_0000_0000_0000_0000 (131072) // !$ 17
     (((((0b101010 ^ 0b101011) & 0b1) << 15) << 2) >>> 0),
-    // 0000_0000_0000_0100_0000_0000_0000_0000 (262144)
+    // 0000_0000_0000_0100_0000_0000_0000_0000 (262144) // !$ 18
     (((((((((0b1010 ^ 0b1011) ^ 0b0) & 0b1) | ((0b1010 ^ 0b1011) & 0b1)) << ((0b10011 ^ 0b00001) & 0b11111)) & (~0)) >>> 0) ^ 0) << 0),
-    // 0000_0000_0000_1000_0000_0000_0000_0000 (524288) // 20
+    // 0000_0000_0000_1000_0000_0000_0000_0000 (524288) // !$ 19
     (((((0xF & 0x7) ^ 0x6) | ((~0) >>> 31)) & 0x1) << (0x1F & 0x13)) >>> 0,
-    // 0000_0000_0001_0000_0000_0000_0000_0000 (1048576)
+    // 0000_0000_0001_0000_0000_0000_0000_0000 (1048576) // !$ 20
     (((((0b11001010 ^ 0b11001011) << 5) >>> 5) & 0xff) ^ 0) << 20,
-    // 0000_0000_0010_0000_0000_0000_0000_0000 (2097152)
+    // 0000_0000_0010_0000_0000_0000_0000_0000 (2097152) // !$ 21
     (1 << ((((0x5A5A5A5A ^ 0xA5A5A5A5) >>> 0) & 0x1F) ^ 0x0A)) >>> 0,
-    // 0000_0000_0100_0000_0000_0000_0000_0000 (4194304)
+    // 0000_0000_0100_0000_0000_0000_0000_0000 (4194304) // !$ 22
     ((((((((1 << 30) ^ (1 << 29)) & (1 << 30)) >>> 8) << 3) >>> 3) ^ 0xDEADBEEF) ^ 0xDEADBEEF) >>> 0,
-    // 0000_0000_1000_0000_0000_0000_0000_0000 (8388608)
+    // 0000_0000_1000_0000_0000_0000_0000_0000 (8388608) // !$ 23
     (((((0b1010 ^ 0b1011) << 27) & 0x7fffffff) >>> 4) ^ 0) | 0,
-    // 0000_0001_0000_0000_0000_0000_0000_0000 (16777216)
+    // 0000_0001_0000_0000_0000_0000_0000_0000 (16777216) // !$ 24
     ((((((0xDEADBEEF ^ 0xDEADBEEE) & 0xFF) ^ (((0xDEADBEEF ^ 0xDEADBEEE) & 0xFF) << 1)) & 0xFF) & 1) << 24) >>> 0,
-    // 0000_0010_0000_0000_0000_0000_0000_0000 (33554432)
+    // 0000_0010_0000_0000_0000_0000_0000_0000 (33554432) // !$ 25
     (((((0b1100 | 0b0010) & 0b0010) >>> 1) ^ 0b0000) << 25) >>> 0,
-
-    // 0000_0100_0000_0000_0000_0000_0000_0000 (67108864)
+    // 0000_0100_0000_0000_0000_0000_0000_0000 (67108864) // !$ 26
     (((((1 << 30) >>> 4) ^ ((0xF0F0F0F0 & 0x0F0F0F0F) >>> 0)) | 0) & ((~0 >>> 0) ^ 0)) >>> 0,
-
-    // 0000_1000_0000_0000_0000_0000_0000_0000 (134217728)
+    // 0000_1000_0000_0000_0000_0000_0000_0000 (134217728) // !$ 27
     ((((0b1110 & 0b0101) ^ 0b0011) & 0b0001) << (((0b11100 | 0b00011) ^ 0b00100) & 0b11111)) >>> 0,
-
-    // 0001_0000_0000_0000_0000_0000_0000_0000 (268435456)
+    // 0001_0000_0000_0000_0000_0000_0000_0000 (268435456) // !$ 28
     (((((0b1111 & 0b0011) ^ 0b0010) | 0) & 0b0001) << 28) >>> 0,
-
-    // 0010_0000_0000_0000_0000_0000_0000_0000 (536870912)
+    // 0010_0000_0000_0000_0000_0000_0000_0000 (536870912) // !$ 29
     (((((((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) << 5) | ((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) >>> 27)) >>> 0) >>> 5) | (((((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) << 5) | ((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) >>> 27)) >>> 0) << 27)) >>> 0) >>> 2,
   ];
 
@@ -557,6 +566,13 @@ function makeBit() {
   na[nCode[0]] = [nonOverlapArr[14], nonOverlapArr[21], nonOverlapArr[7]]; // NUM 1
   na[nCode[1]] = [nonOverlapArr[29], nonOverlapArr[18], nonOverlapArr[2]]; // NUM 2
   na[nCode[2]] = [nonOverlapArr[27], nonOverlapArr[23], nonOverlapArr[11]]; // NUM 3
+  na[nCode[3]] = [nonOverlapArr[15], nonOverlapArr[17], nonOverlapArr[24]]; // NUM 4
+  na[nCode[4]] = [nonOverlapArr[12], nonOverlapArr[22], nonOverlapArr[19]]; // NUM 5
+  na[nCode[5]] = [nonOverlapArr[13], nonOverlapArr[16], nonOverlapArr[0]]; // NUM 6
+  na[nCode[6]] = [nonOverlapArr[6],  nonOverlapArr[4],  nonOverlapArr[9]]; // NUM 7
+  na[nCode[7]] = [nonOverlapArr[20], nonOverlapArr[3],  nonOverlapArr[5]]; // NUM 8
+  na[nCode[8]] = [nonOverlapArr[28], nonOverlapArr[1],  nonOverlapArr[10]]; // NUM 9
+  na[nCode[9]] = [nonOverlapArr[26], nonOverlapArr[8],  nonOverlapArr[25]]; // NUM 10
 
   const L = (((((((((0b10101100 << 1) ^ 0b11010011) & 0x1ff) ^ 0) & 0xff) | 0) >>> 0) << 3) >>> 3) & 0b111; // array length : 3 의 복잡한 비트연산
   const R = Math.floor(Math.random() * L);
@@ -567,8 +583,8 @@ function makeBit() {
   };
 
   const CN = {
-    l: findNum(nCode[2]), // local peer card
-    r: findNum(nCode[0]), // remote peer card
+    l: findNum(nCode[9]), // local peer card
+    r: findNum(nCode[2]), // remote peer card
   };
 
   // 카드 번호 잘못 입력 시 에러처리
@@ -582,18 +598,95 @@ function makeBit() {
   let perm = 0;
 
   if (
-    (MM === 132 || MM === 2359296 || MM === 536887296) || // 132, 2359296, 536887296 => 카드번호 1, 2 -> 1 꺼야됨
-    (MM === 2176 || MM === 10485760 || MM === 134234112) // 2176, 10485760, 134234112 => 카드번호 1, 3 -> 1 꺼야됨
+    (MM === 132 || MM === 2359296 || MM === 536887296) ||       // 132, 2359296, 536887296      => 카드번호 1, 2 -> 1 꺼야됨
+    (MM === 2176 || MM === 10485760 || MM === 134234112) ||     // 2176, 10485760, 134234112    => 카드번호 1, 3 -> 1 꺼야됨
+    (MM === 49152 || MM === 2228224 || MM === 16777344) ||      // 49152, 2228224, 16777344     => 카드번호 1, 4 -> 1 꺼야됨
+    (MM === 20480 || MM === 524416 || MM === 6291456) ||        // 20480, 524416, 6291456       => 카드번호 1, 5 -> 1 꺼야됨
+    (MM === 129 || MM === 24576 || MM === 2162688) ||           // 129, 24576, 2162688          => 카드번호 1, 6 -> 1 꺼야됨
+    (MM === 640 || MM === 16448 || MM === 2097168) ||           // 640, 16448, 2097168          => 카드번호 1, 7 -> 1 꺼야됨
+    (MM === 160 || MM === 1064960 || MM === 2097160) ||         // 160, 1064960, 2097160        => 카드번호 1, 8 -> 1 꺼야됨
+    (MM === 1152 || MM === 2097154 || MM === 268451840) ||      // 1152, 2097154, 268451840     => 카드번호 1, 9 -> 1 꺼야됨
+    (MM === 2097408 || MM === 33554560 || MM === 67125248)      // 2097408, 33554560, 67125248  => 카드번호 1, 10 -> 1 꺼야됨
   ) {
     const card1Set = new Set(na[nCode[0]]); // NUM 1
     const card1Side = card1Set.has(CN.l) ? CN.r : CN.l;
     perm |= card1Side;
   } else if (
-    (MM === 2052 || MM === 8650752 || MM === 671088640) // 2052, 8650752, 671088640 => 카드번호 2, 3 -> 2 꺼야됨
+    (MM === 2052 || MM === 8650752 || MM === 671088640) ||      // 2052, 8650752, 671088640     => 카드번호 2, 3 -> 2 꺼야됨
+    (MM === 393216 || MM === 16777220 || MM === 536903680) ||   // 393216, 16777220, 536903680  => 카드번호 2, 4 -> 2 꺼야됨
+    (MM === 524292 || MM === 4456448 || MM === 536875008) ||    // 524292, 4456448, 536875008   => 카드번호 2, 5 -> 2 꺼야됨
+    (MM === 5 || MM === 327680 || MM === 536879104) ||          // 5, 327680, 536879104         => 카드번호 2, 6 -> 2 꺼야됨
+    (MM === 516 || MM === 262160 || MM === 536870976) ||        // 516, 262160, 536870976       => 카드번호 2, 7 -> 2 꺼야됨
+    (MM === 36 || MM === 262152 || MM === 537919488) ||         // 36, 262152, 537919488        => 카드번호 2, 8 -> 2 꺼야됨
+    (MM === 1028 || MM === 262146 || MM === 805306368) ||       // 1028, 262146, 805306368      => 카드번호 2, 9 -> 2 꺼야됨
+    (MM === 262400 || MM === 33554436 || MM === 603979776)      // 262400, 33554436, 603979776  => 카드번호 2, 10 -> 2 꺼야됨
   ) {
     const card2Set = new Set(na[nCode[1]]); // NUM 2
     const card2Side = card2Set.has(CN.l) ? CN.r : CN.l;
     perm |= card2Side;
+  } else if (
+    (MM === 8519680 || MM === 16779264 || MM === 134250496) ||  // 8519680, 16779264, 134250496 => 카드번호 3, 4 -> 3 꺼야됨
+    (MM === 526336 || MM === 12582912 || MM === 134221824) ||   // 526336, 12582912, 134221824  => 카드번호 3, 5 -> 3 꺼야됨
+    (MM === 2049 || MM === 8454144 || MM === 134225920) ||      // 2049, 8454144, 134225920     => 카드번호 3, 6 -> 3 꺼야됨
+    (MM === 2560 || MM === 8388624 || MM === 134217792) ||      // 2560, 8388624, 134217792     => 카드번호 3, 7 -> 3 꺼야됨
+    (MM === 2080 || MM === 8388616 || MM === 135266304) ||      // 2080, 8388616, 135266304     => 카드번호 3, 8 -> 3 꺼야됨
+    (MM === 3072 || MM === 8388610 || MM === 402653184) ||      // 3072, 8388610, 402653184     => 카드번호 3, 9 -> 3 꺼야됨
+    (MM === 8388864 || MM === 33556480 || MM === 201326592)     // 8388864, 33556480, 201326592 => 카드번호 3, 10 -> 3 꺼야됨
+  ) {
+    const card3Set = new Set(na[nCode[2]]); // NUM 3
+    const card3Side = card3Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card3Side;
+  } else if (
+    (MM === 36864 || MM === 4325376 || MM === 17301504) ||      // 36864, 4325376, 17301504     => 카드번호 4, 5 -> 4 꺼야됨
+    (MM === 40960 || MM === 196608 || MM === 16777217) ||       // 40960, 196608, 16777217      => 카드번호 4, 6 -> 4 꺼야됨
+    (MM === 32832 || MM === 131088 || MM === 16777728) ||       // 32832, 131088, 16777728      => 카드번호 4, 7 -> 4 꺼야됨
+    (MM === 131080 || MM === 1081344 || MM === 16777248) ||     // 131080, 1081344, 16777248    => 카드번호 4, 8 -> 4 꺼야됨
+    (MM === 131074 || MM === 16778240 || MM === 268468224) ||   // 131074, 16778240, 268468224  => 카드번호 4, 9 -> 4 꺼야됨
+    (MM === 131328 || MM === 50331648 || MM === 67141632)       // 131328, 50331648, 67141632   => 카드번호 4, 10 -> 4 꺼야됨
+  ) {
+    const card4Set = new Set(na[nCode[3]]); // NUM 4
+    const card4Side = card4Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card4Side;
+  } else if (
+    (MM === 12288 || MM === 524289 || MM === 4259840) ||        // 12288, 524289, 4259840       => 카드번호 5, 6 -> 5 꺼야됨
+    (MM === 4160 || MM === 524800 || MM === 4194320) ||         // 4160, 524800, 4194320        => 카드번호 5, 7 -> 5 꺼야됨
+    (MM === 524320 || MM === 1052672 || MM === 4194312) ||      // 524320, 1052672, 4194312     => 카드번호 5, 8 -> 5 꺼야됨
+    (MM === 525312 || MM === 4194306 || MM === 268439552) ||    // 525312, 4194306, 268439552   => 카드번호 5, 9 -> 5 꺼야됨
+    (MM === 4194560 || MM === 34078720 || MM === 67112960)      // 4194560, 34078720, 67112960  => 카드번호 5, 10 -> 5 꺼야됨
+  ) {
+    const card5Set = new Set(na[nCode[4]]); // NUM 5
+    const card5Side = card5Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card5Side;
+  } else if (
+    (MM === 513 || MM === 8256 || MM === 65552) ||              // 513, 8256, 65552             => 카드번호 6, 7 -> 6 꺼야됨
+    (MM === 33 || MM === 65544 || MM === 1056768) ||            // 33, 65544, 1056768           => 카드번호 6, 8 -> 6 꺼야됨
+    (MM === 1025 || MM === 65538 || MM === 268443648) ||        // 1025, 65538, 268443648       => 카드번호 6, 9 -> 6 꺼야됨
+    (MM === 65792 || MM === 33554433 || MM === 67117056)        // 65792, 33554433, 67117056    => 카드번호 6, 10 -> 6 꺼야됨
+  ) {
+    const card6Set = new Set(na[nCode[5]]); // NUM 6
+    const card6Side = card6Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card6Side;
+  } else if (
+    (MM === 24 || MM === 544 || MM === 1048640) ||              // 24, 544, 1048640             => 카드번호 7, 8 -> 7 꺼야됨
+    (MM === 18 || MM === 1536 || MM === 268435520) ||           // 18, 1536, 268435520          => 카드번호 7, 9 -> 7 꺼야됨
+    (MM === 272 || MM === 33554944 || MM === 67108928)          // 272, 33554944, 67108928      => 카드번호 7, 10 -> 7 꺼야됨
+  ) {
+    const card7Set = new Set(na[nCode[6]]); // NUM 7
+    const card7Side = card7Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card7Side;
+  } else if (
+    (MM === 10 || MM === 1056 || MM === 269484032) ||           // 10, 1056, 269484032          => 카드번호 8, 9 -> 8 꺼야됨
+    (MM === 264 || MM === 33554464 || MM === 68157440)          // 264, 33554464, 68157440      => 카드번호 8, 10 -> 8 꺼야됨
+  ) {
+    const card8Set = new Set(na[nCode[7]]); // NUM 8
+    const card8Side = card8Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card8Side;
+  } else if (
+    (MM === 258 || MM === 33555456 || MM === 335544320)         // 258, 33555456, 335544320     => 카드번호 9, 10 -> 9 꺼야됨
+  ) {
+    const card9Set = new Set(na[nCode[8]]); // NUM 9
+    const card9Side = card9Set.has(CN.l) ? CN.r : CN.l;
+    perm |= card9Side;
   }
 
   
@@ -625,5 +718,152 @@ function makeBit() {
   console.log(can3, N3); */
 };
 // console.time("makeBit");
-makeBit();
+// makeBit();
 // console.timeEnd("makeBit");
+
+console.clear();
+
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+
+import addToCardIdx from "./addToCardIdx.js";
+import { randomIntBetween } from "./module/randomIntBetween.js";
+
+const TOKENS = [ // 0 부터 9의 순서로 정렬해서 만들것
+  0x8917b4cc, // 1
+  0xb3534d0d, // 2
+  0x4140d33e, // 3
+  0xeb5f99e4, // 4
+  0x29b7d578, // 5
+  0xbd416fa7, // 6
+  0x37326fcd, // 7
+  0xa5670011, // 8
+  0xd0cd190d, // 9
+  0x96319eef, // 10
+];
+
+function findBits(_code) {
+  switch (_code) {
+    case TOKENS[0]: return [
+      ((((((((((0b1110 & 0b1011) ^ 0b1001) << 5) | (((0b1110 & 0b1011) ^ 0b1001) >>> 1)) & 0xff) ^ 0b01010101) & 0xff) & 0b00001111) ^ 0b00000101)) << 14,
+      (1 << ((((0x5A5A5A5A ^ 0xA5A5A5A5) >>> 0) & 0x1F) ^ 0x0A)) >>> 0,
+      (((0b1010 << 4) | 0b0101) | 0b01011010) ^ ((((0b1010 << 4) | 0b0101) | 0b01011010) >>> 1)
+    ];
+
+    case TOKENS[1]: return [
+      (((((((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) << 5) | ((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) >>> 27)) >>> 0) >>> 5) | (((((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) << 5) | ((((((0x12345678 ^ 0x9abcdef0) & 0x0f0f0f0f) | ((0x12345678 ^ 0x9abcdef0) & 0xf0f0f0f0)) & 0xf0000000) >>> 0) >>> 27)) >>> 0) << 27)) >>> 0) >>> 2,
+      (((((((((0b1010 ^ 0b1011) ^ 0b0) & 0b1) | ((0b1010 ^ 0b1011) & 0b1)) << ((0b10011 ^ 0b00001) & 0b11111)) & (~0)) >>> 0) ^ 0) << 0),
+      (((((0b110010 ^ 0b110110) << 3) >>> 3) & 0b1111) | 0b0000) ^ 0b0000
+    ];
+
+    case TOKENS[2]: return [
+      ((((0b1110 & 0b0101) ^ 0b0011) & 0b0001) << (((0b11100 | 0b00011) ^ 0b00100) & 0b11111)) >>> 0,
+      (((((0b1010 ^ 0b1011) << 27) & 0x7fffffff) >>> 4) ^ 0) | 0,
+      ((((((0b110110 ^ 0b101011) & 0b111111) >>> 4) & 0b11) ^ 0b10) >>> 1) << 11
+    ];
+
+    case TOKENS[3]: return [
+      (((((0b101010 ^ 0b111011) & 0b111111) ^ 0b10000) << 11) << 4),
+      (((((0b101010 ^ 0b101011) & 0b1) << 15) << 2) >>> 0),
+      ((((((0xDEADBEEF ^ 0xDEADBEEE) & 0xFF) ^ (((0xDEADBEEF ^ 0xDEADBEEE) & 0xFF) << 1)) & 0xFF) & 1) << 24) >>> 0
+    ];
+
+    case TOKENS[4]: return [
+      ((((0b11011001 ^ 0b10101101) & 0b00000111) << 10) >>> 0),
+      ((((((((1 << 30) ^ (1 << 29)) & (1 << 30)) >>> 8) << 3) >>> 3) ^ 0xDEADBEEF) ^ 0xDEADBEEF) >>> 0,
+      (((((0xF & 0x7) ^ 0x6) | ((~0) >>> 31)) & 0x1) << (0x1F & 0x13)) >>> 0
+    ];
+
+    case TOKENS[5]: return [
+      (((0b101011 ^ 0b101010) & 0b1) << ((0b1110 & 0b1101) ^ 0b0001)) >>> 0,
+      ((0xDEAD ^ 0xDEAC) << ((0x33 ^ 0x23) & 0b11111)) | 0,
+      ((((0b101101 ^ 0b101100) << 3) >>> 3) & 0b11111111) ^ 0
+    ];
+
+    case TOKENS[6]: return [
+      (((((0b1010 & 0b0101) ^ 0b0011) & 0b0001) << 6) | (0b1111111 & 0)) & 0b11111111,
+      (((((0b110011 ^ 0b101010) & 0b111111) >>> 2) ^ 0b000111) & 0b1111) << 4,
+      (((((0b110110 ^ 0b101011) & 0b111111) >>> 2) & 0b0011) ^ 0b0010) << 9
+    ];
+
+    case TOKENS[7]: return [
+      (((((0b11001010 ^ 0b11001011) << 5) >>> 5) & 0xff) ^ 0) << 20,
+      ((((((0b101101 ^ 0b001001) & 0b111111) >>> 2) & 0b1110) ^ 0b0011) ^ 0b0011),
+      (((((0b1010 | 0b0100) ^ 0b1100) & 0b0011) ^ (((0b1010 | 0b0100) ^ 0b1100) >>> 2)) << 4) & 0b111111
+    ];
+
+    case TOKENS[8]: return [
+      (((((0b1111 & 0b0011) ^ 0b0010) | 0) & 0b0001) << 28) >>> 0,
+      (((((0b1101 << 3) ^ 0b0100100) & 0b111111) >>> 2) ^ 0b0001) & 0b1111,
+      (((((0b1111 ^ 0b1110) << 12) ^ (1 << 15)) >>> 2) & ~(1 << 13)) | 0
+    ];
+
+    case TOKENS[9]: return [
+      (((((1 << 30) >>> 4) ^ ((0xF0F0F0F0 & 0x0F0F0F0F) >>> 0)) | 0) & ((~0 >>> 0) ^ 0)) >>> 0,
+      (0b1010 ^ 0b1011) << (((0b1111 & 0b0011) << 1) ^ 0b1110),
+      (((((0b1100 | 0b0010) & 0b0010) >>> 1) ^ 0b0000) << 25) >>> 0
+    ];
+
+    default:
+      console.warn("카드 번호 오류");
+      return [];
+  }
+}
+
+/**
+ * 내 카드번호와 상대 카드번호를 받아서 대/소 비교 후 결과 리턴
+ * @param {string} _l local : 내 키드번호
+ * @param {string} _r remote : 상대 키드번호
+ * @param {number} _n 비트연산 출발 숫자 - cardCompare 함수 내부에서 0으로 만듬 ex) n^=n, n&=0
+ */
+// function cardCompare(_l, _r, _n) {
+function cardCompare(_l, _r) {
+  const na = Object.create(null);
+  na[_l] = findBits(_l);
+  na[_r] = findBits(_r);
+
+  const L = (((((((((0b10101100 << 1) ^ 0b11010011) & 0x1ff) ^ 0) & 0xff) | 0) >>> 0) << 3) >>> 3) & 0b111; // array length : 3 의 복잡한 비트연산
+  const R = Math.floor(Math.random() * L);
+
+  function findNum(n) {
+    if (!TOKENS.includes(n)) return false;
+    return na[n][R];
+  };
+
+  const CN = {
+    l: findNum(_l), // local peer card
+    r: findNum(_r), // remote peer card
+  };
+
+  // 카드 번호 잘못 입력 시 에러처리
+  if (!CN.l || !CN.r) {
+    return console.warn("Card Number ERROR");
+  }
+
+  // const idx = addToCardIdx[CN.l | CN.r];
+  // const s = new Set(na[addToCardIdx[CN.l | CN.r]]);
+
+  // # CASE 1 : _n 을 0으로 바꿈
+  // _n ^= _n;
+  // _n |= s.has(CN.l) ? CN.r : CN.l;
+  // # CASE 2 : _n 을 0으로 바꿈
+  // # CASE 1 : _n 사용
+  // _n = (s.has(CN.l) ? CN.r : CN.l) | 0; // | 0 => 위 두줄과 동일
+  // return (_n & CN.l) !== 0;
+  // # CASE 2 : _n 미사용
+  // return (((s.has(CN.l) ? CN.r : CN.l) | 0) & CN.l) !== 0;
+
+  return ((((new Set(na[addToCardIdx[CN.l | CN.r]])).has(CN.l) ? CN.r : CN.l) | 0) & CN.l) !== 0;
+};
+
+const localCard = TOKENS[3];
+const remoteCard = TOKENS[9];
+const result = cardCompare(localCard, remoteCard);
+console.log("내가", result ? "이겼음" : "졌음");
+
+// console.clear();
+
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————

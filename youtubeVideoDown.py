@@ -2,6 +2,10 @@
 # url : https://4ourfuture.tistory.com/32
 # 실행파일 생성 : pyinstaller --onefile --windowed youtubeVideoDown.py
 
+# pip install pytube
+# pip install pytubefix
+# pip install pyinstaller
+
 from pytubefix import YouTube
 import tkinter as tk
 from tkinter import messagebox
