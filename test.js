@@ -854,12 +854,14 @@ function cardCompare(_l, _r) {
   // # CASE 2 : _n 미사용
   // return (((s.has(CN.l) ? CN.r : CN.l) | 0) & CN.l) !== 0;
 
-  return ((((new Set(na[addToCardIdx[CN.l | CN.r]])).has(CN.l) ? CN.r : CN.l) | 0) & CN.l) !== 0;
+  return ((((new Set(na[addToCardIdx.get(CN.l | CN.r)])).has(CN.l) ? CN.r : CN.l) | 0) & CN.l) !== 0;
 };
 
-const localCard = TOKENS[3];
-const remoteCard = TOKENS[9];
+const localCard = TOKENS[9];
+const remoteCard = TOKENS[8];
+// console.time("cardCompare");
 const result = cardCompare(localCard, remoteCard);
+// console.timeEnd("cardCompare");
 console.log("내가", result ? "이겼음" : "졌음");
 
 // console.clear();

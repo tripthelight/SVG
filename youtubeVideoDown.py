@@ -13,6 +13,7 @@ from tkinter import messagebox
 def download_youtube_video():
   video_url = url_entry.get()
   download_path = path_entry.get()
+  video_quality = quality_entry.get()
 
   if not video_url or not download_path:
     messagebox.showerror("오류", "URL과 다운로드 경로를 입력하세요.")
@@ -20,7 +21,8 @@ def download_youtube_video():
 
   try:
     yt = YouTube(video_url)
-    video_stream = yt.streams.filter(res='1080p', file_extension='mp4').first()
+    # video_stream = yt.streams.filter(res='1080p', file_extension='mp4').first()
+    video_stream = yt.streams.filter(res=video_quality, file_extension='mp4').first()
     video_stream.download(download_path)
     messagebox.showinfo("완료", f"{video_stream.title} 다운로드 완료!")
 
@@ -37,6 +39,12 @@ url_entry.pack()
 tk.Label(root, text="다운로드 경로:").pack()
 path_entry = tk.Entry(root, width=50)
 path_entry.pack()
+path_entry.insert(0, "C:/Users/Administrator/Downloads/dw")
+
+tk.Label(root, text="화질:").pack()
+quality_entry = tk.Entry(root, width=50)
+quality_entry.pack()
+quality_entry.insert(0, "1080p")
 
 download_button = tk.Button(root, text="다운로드", command=download_youtube_video)
 download_button.pack()
