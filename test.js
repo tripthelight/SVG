@@ -860,12 +860,404 @@ function cardCompare(_l, _r) {
 const localCard = TOKENS[9];
 const remoteCard = TOKENS[8];
 // console.time("cardCompare");
-const result = cardCompare(localCard, remoteCard);
+// const result = cardCompare(localCard, remoteCard);
 // console.timeEnd("cardCompare");
-console.log("내가", result ? "이겼음" : "졌음");
+// console.log("내가", result ? "이겼음" : "졌음");
+
+console.clear();
+
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+
+// 1000~9999 사이에서 중복 없이
+// 10개짜리 배열 200개(총 2000개 숫자) 생성
+
+function makeUniqueGroups() {
+  const MIN = 1000;
+  const MAX = 9999;
+  const groupSize = 10;
+  const groupCount = 200;
+  const totalNeeded = groupSize * groupCount; // 2000
+
+  const poolSize = MAX - MIN + 1; // 9000
+  if (totalNeeded > poolSize) {
+    throw new Error("요구 수량이 범위를 초과합니다.");
+  }
+
+  // 1) 풀 만들기: 1000..9999
+  const pool = Array.from({ length: poolSize }, (_, i) => MIN + i);
+
+  // 2) 풀 셔플(Fisher–Yates)
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  // 3) 앞에서 2000개만 잘라서 10개씩 그룹핑
+  const picked = pool.slice(0, totalNeeded);
+
+  const result = [];
+  for (let i = 0; i < groupCount; i++) {
+    const start = i * groupSize;
+    result.push(picked.slice(start, start + groupSize));
+  }
+
+  return result;
+}
+
+// const arrays200 = makeUniqueGroups();
+// console.log(JSON.stringify(arrays200));
+// console.log(arrays200.length);       // 200
+// console.log(arrays200[0].length); 
+
+console.clear();
+
+// ============================================================
+
+// Fisher–Yates shuffle
+function shuffleInPlace(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// 100개 만들기: (10개의 3개묶음) = 30개 숫자, 배열 내부 중복 없음
+function makeData(count = 100, groups = 10, groupSize = 3) {
+  const need = groups * groupSize; // 30
+
+  const result = [];
+  for (let k = 0; k < count; k++) {
+    // 이 배열에서만 쓸 30개의 고유 양의 정수(연속) 준비
+    const base = k * need + 1;
+    const nums = Array.from({ length: need }, (_, i) => base + i);
+
+    // 숫자 순서 섞고
+    shuffleInPlace(nums);
+
+    // 3개씩 끊어서 10묶음 만들기
+    const one = [];
+    for (let i = 0; i < nums.length; i += groupSize) {
+      one.push(nums.slice(i, i + groupSize));
+    }
+
+    // 묶음(10개) 순서도 섞고 싶으면(원하면 유지해도 됨)
+    shuffleInPlace(one);
+
+    result.push(one);
+  }
+  return result;
+}
+
+// const data = makeData(100, 10, 3);
+// console.log(JSON.stringify(data));
+
+console.clear();
+
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+
+// Fisher–Yates shuffle
+function shufflePlace(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/**
+ * 100개 배열을 만들되, 전체 정수(3000개)를 한 번에 랜덤 셔플해서 배치
+ * - 최종 구조: data[100][10][3]
+ * - 전체 정수는 전부 양의 정수 & 중복 없음
+ */
+function makeDataAllShuffled(count = 100, groups = 10, groupSize = 3) {
+  const perOne = groups * groupSize; // 30
+  const total = count * perOne;      // 3000
+
+  // 1..total 고유 정수 준비
+  const pool = Array.from({ length: total }, (_, i) => i + 1);
+
+  // 전체 정수 랜덤 셔플
+  shufflePlace(pool);
+
+  // count개로 나누고, 각 덩어리를 10x3으로 재구성
+  const result = [];
+  let idx = 0;
+
+  for (let c = 0; c < count; c++) {
+    const one = [];
+    for (let g = 0; g < groups; g++) {
+      const triple = [pool[idx++], pool[idx++], pool[idx++]];
+      one.push(triple);
+    }
+    // (원하면) 10묶음 순서도 섞기
+    shufflePlace(one);
+
+    result.push(one);
+  }
+
+  return result;
+}
+
+// const data = makeDataAllShuffled(100, 10, 3);
+// console.log(JSON.stringify(data));
 
 // console.clear();
 
+// ============================================================
+
+const __pack3 = (t) => {
+  // 일부러 복잡하게: 형 검사 + 값 보정 + 정렬 네트워크 + BigInt 패킹
+  const x0 = (t?.[0] ?? NaN);
+  const y0 = (t?.[1] ?? NaN);
+  const z0 = (t?.[2] ?? NaN);
+
+  // 숫자 강제(정수화) + NaN 방지(그래도 NaN이면 뒤에서 에러)
+  let a = (x0 | 0);
+  let b = (y0 | 0);
+  let c = (z0 | 0);
+
+  // 3개 정렬(순서 무시 매칭을 위해) - compare-swap 네트워크
+  if (a > b) { const tmp = a; a = b; b = tmp; }
+  if (b > c) { const tmp = b; b = c; c = tmp; }
+  if (a > b) { const tmp = a; a = b; b = tmp; }
+
+  // BigInt로 12bit씩 패킹(최대 3000대라 4096 미만)
+  // (a << 24) | (b << 12) | c
+  const A = BigInt(a);
+  const B = BigInt(b);
+  const C = BigInt(c);
+  return (A << 24n) ^ (B << 12n) ^ C;
+};
+
+const __buildIndex = (() => {
+  // 일부러 복잡하게: IIFE + Map + 입력 데이터 나열 + 추가적인 연산
+  const m = new Map();
+
+  const addGroup = (gid, triples) => {
+    // 의미 없는 연산들을 조금 섞어서 "복잡도"만 올림
+    const salt = (gid * 2654435761) >>> 0;
+    for (let i = 0; i < triples.length; i++) {
+      const t = triples[i];
+      const key = __pack3(t);
+
+      // 쓸데없는 검증(충돌/중복 방지) - 실제론 없어도 됨
+      const prev = m.get(key);
+      if (prev !== undefined && prev !== gid) {
+        throw new Error("키 충돌 발생(데이터 이상)");
+      }
+
+      // 또 쓸데없는 조작
+      const noise = BigInt((salt ^ (i * 97)) >>> 0);
+      m.set(key ^ (noise & 0n), gid); // &0n으로 사실상 변화 없음(복잡도용)
+    }
+  };
+
+  addGroup(1, [
+    [5,15,12], [7,18,13], [24,19,22], [21,14,27], [11,23,25],
+    [28,8,6], [3,4,17], [26,2,16], [29,10,20], [30,9,1]
+  ]);
+
+  addGroup(2, [
+    [47,34,41], [39,33,38], [50,49,40], [56,36,51], [53,60,32],
+    [45,43,52], [31,59,58], [35,46,48], [42,54,37], [44,57,55]
+  ]);
+
+  addGroup(3, [
+    [84,77,86], [83,70,75], [87,63,74], [76,72,64], [85,62,61],
+    [69,81,89], [68,71,90], [79,80,78], [82,73,88], [67,66,65]
+  ]);
+
+  addGroup(4, [
+    [109,120,92], [110,106,101], [102,91,113], [119,108,95], [103,97,118],
+    [107,112,100], [93,117,111], [105,98,114], [96,116,99], [94,104,115]
+  ]);
+
+  addGroup(5, [
+    [129,145,123], [142,144,148], [147,128,127], [149,139,131], [125,126,135],
+    [121,137,136], [122,124,150], [138,141,140], [134,132,130], [133,146,143]
+  ]);
+
+  addGroup(6, [
+    [169,164,168], [175,155,163], [179,152,173], [157,156,167], [174,178,154],
+    [160,172,165], [180,158,177], [153,176,161], [170,171,159], [151,166,162]
+  ]);
+
+  addGroup(7, [
+    [204,200,194], [182,184,186], [202,203,183], [191,206,190], [181,199,188],
+    [208,189,201], [185,187,193], [196,192,198], [197,195,205], [210,209,207]
+  ]);
+
+  addGroup(8, [
+    [2974,2996,2997], [2983,2973,2972], [2971,3000,2978], [2990,2993,2977], [2985,2995,2976],
+    [2988,2982,2980], [2999,2998,2989], [2984,2981,2994], [2987,2992,2975], [2979,2986,2991]
+  ]);
+
+  addGroup(9, [
+    [2959,2950,2954], [2948,2955,2963], [2957,2953,2962], [2941,2961,2952], [2949,2945,2964],
+    [2947,2942,2946], [2960,2970,2951], [2968,2965,2969], [2967,2966,2958], [2943,2956,2944]
+  ]);
+
+  addGroup(10, [
+    [2933,2912,2911], [2937,2913,2917], [2923,2922,2929], [2934,2932,2935], [2939,2918,2936],
+    [2930,2940,2919], [2921,2914,2931], [2927,2916,2925], [2924,2938,2928], [2920,2926,2915]
+  ]);
+
+  return m;
+})();
+
+function complexReturn(triple) {
+  // 일부러 복잡하게: 키 생성 전 검사/보정
+  if (!Array.isArray(triple) || triple.length < 3) {
+    throw new TypeError("길이 3 이상의 배열을 넣어주세요.");
+  }
+
+  const key = __pack3(triple);
+
+  // 또 쓸데없는 단계들
+  const gid = (__buildIndex.get(key) ?? 0) | 0;
+
+  // 리턴 배열은 "리스트로 저장하지 않고" 여기서 직접 리턴
+  switch (gid) {
+    case 1:
+      return [79, 69, 74, 78, 73, 72, 77, 75, 88, 84];
+    case 2:
+      return [71, 73, 90, 70, 78, 80, 84, 83, 86, 75];
+    case 3:
+      return [79, 67, 78, 76, 84, 71, 77, 70, 75, 83];
+    case 4:
+      return [68, 75, 72, 79, 88, 77, 73, 86, 69, 65];
+    case 5:
+      return [80, 68, 66, 73, 90, 85, 79, 70, 77, 74];
+    case 6:
+      return [75, 70, 79, 85, 68, 66, 82, 90, 86, 73];
+    case 7:
+      return [77, 73, 80, 71, 83, 72, 68, 65, 85, 70];
+    case 8:
+      return [83, 74, 82, 87, 84, 68, 71, 85, 88, 72];
+    case 9:
+      return [72, 74, 90, 85, 84, 79, 88, 70, 81, 65];
+    case 10:
+      return [74, 82, 80, 70, 73, 71, 83, 66, 68, 78];
+    default: {
+      // 더 복잡하게: 에러 메시지에 키도 넣어줌
+      const msg = `알 수 없는 입력입니다. triple=${JSON.stringify(triple)} key=${key.toString()}`;
+      throw new RangeError(msg);
+    }
+  }
+}
+
+// 사용 예시:
+// console.log(complexReturn([2948,2955,2963]));
+
+console.clear();
+
 // ———————————————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————————
+
+const weirdDecode = (() => {
+  // (입력/출력 숫자들이 코드에 그대로 노출되지 않도록) 데이터는 난독화된 문자열 조각으로만 보관
+  const P = [
+    "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",
+    "==guF6KUQABFrFYOLwKpr4KQoOdzMTi1TeP9kNgSuGtc6XhPTlf9FEOS",
+  ];
+
+  const B64 = (() => {
+    // 홀수 인덱스 조각은 뒤집어서 저장되어 있으므로 여기서 다시 뒤집어 복원
+    let s = "";
+    for (let i = 0; i < P.length; i++) {
+      const t = P[i];
+      s += (i & 1) ? t.split("").reverse().join("") : t;
+    }
+    return s;
+  })();
+
+  const b64ToU8 = (s) => {
+    s = String(s).replace(/[^A-Za-z0-9+/=]/g, "");
+    if (typeof atob === "function") {
+      const bin = atob(s);
+      const u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i) & 255;
+      return u8;
+    }
+    // Node.js fallback
+    return Uint8Array.from(Buffer.from(s, "base64"));
+  };
+
+  const xs32 = (seed) => {
+    let x = seed >>> 0;
+    return () => {
+      x ^= (x << 13) >>> 0;
+      x ^= x >>> 17;
+      x ^= (x << 5) >>> 0;
+      return (x >>> 0);
+    };
+  };
+
+  const decryptInPlace = (u8) => {
+    const next = xs32(0xa5f1523d);
+    for (let i = 0; i < u8.length; i++) {
+      const r = next();
+      const k = ((r ^ Math.imul(i, 0x9e3779b9)) >>> ((i & 3) << 3)) & 255;
+      u8[i] ^= k;
+    }
+    return u8;
+  };
+
+  const raw = decryptInPlace(b64ToU8(B64));
+  const dv = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+
+  const mix = (x) => {
+    x |= 0;
+    x ^= x >>> 16;
+    x = Math.imul(x, 0x7feb352d);
+    x ^= x >>> 15;
+    x = Math.imul(x, 0x846ca68b);
+    x ^= x >>> 16;
+    return x >>> 0;
+  };
+
+  const REC = 16;
+
+  return (tri) => {
+    const a = ((tri && tri[0]) ?? 0) | 0;
+    const b = ((tri && tri[1]) ?? 0) | 0;
+    const c = ((tri && tri[2]) ?? 0) | 0;
+
+    // 의미 없는 태그(복잡도 증가용)
+    const tag = mix(a ^ (b << 11) ^ (c << 22));
+
+    for (let off = 0; off < raw.byteLength; off += REC) {
+      const ra = dv.getUint16(off, true);
+      const rb = dv.getUint16(off + 2, true);
+      const rc = dv.getUint16(off + 4, true);
+
+      if (((ra ^ a) | (rb ^ b) | (rc ^ c)) === 0) {
+        // "배열을 직접 리턴": 중간 리스트 만들지 않고 바로 반환
+        return Array.from({ length: 10 }, (_, i) => raw[off + 6 + i] ^ ((tag >>> ((i & 3) << 3)) & 0));
+      }
+    }
+
+    throw new Error("지원하지 않는 입력입니다.");
+  };
+})();
+
+const r = weirdDecode([0o4446,0x543,0b100011110101]);
+console.log(r);
