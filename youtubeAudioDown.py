@@ -3,4 +3,4 @@
 # pip install yt-dlp
 # pip install ffmpeg
 
-# yt-dlp -P "C:\Users\Administrator\Downloads\dw" -x "https://youtu.be/bMSwRBNlugA" --audio-format "mp3" --audio-quality 128k --sponsorblock-remove all
+# yt-dlp -P "H:/dw" -x "https://youtu.be/ueLpXcgKKk0" --audio-format "mp3" --audio-quality 128k --sponsorblock-remove all

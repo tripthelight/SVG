@@ -39,7 +39,7 @@ url_entry.pack()
 tk.Label(root, text="다운로드 경로:").pack()
 path_entry = tk.Entry(root, width=50)
 path_entry.pack()
-path_entry.insert(0, "C:/Users/Administrator/Downloads/dw")
+path_entry.insert(0, "H:/dw")
 
 tk.Label(root, text="화질:").pack()
 quality_entry = tk.Entry(root, width=50)
