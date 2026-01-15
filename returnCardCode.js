@@ -215,184 +215,17 @@ function createP() {
       [72, 74, 90, 85, 84, 79, 88, 70, 81, 65],
       [74, 82, 80, 70, 73, 71, 83, 66, 68, 78]
     ],
-    pieces: 14,          // P 조각 수
-    seed: 0xa5f1523d,    // decode쪽 seed와 동일해야 함
+    // pieces: 14,          // P 조각 수
+    pieces: Math.floor(Math.random() * (15 - 10 + 1)) + 10,          // P 조각 수
+    // seed: 0xa5f1523d,    // decode쪽 seed와 동일해야 함
+    seed: (Math.random() * 0x100000000) >>> 0,    // decode쪽 seed와 동일해야 함
   });
 
+  console.log(P);
   // console.log(JSON.stringify(P));
 
 };
-// createP();
-
-
-console.clear();
-
-// ———————————————————————————————————————————————————————————
-// ———————————————————————————————————————————————————————————
-// ———————————————————————————————————————————————————————————
-
-function wd() {
-  const weirdDecode = (() => {
-    /* const P = [
-      "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",
-      "==guF6KUQABFrFYOLwKpr4KQoOdzMTi1TeP9kNgSuGtc6XhPTlf9FEOS",
-    ]; */
-
-    // (입력/출력 숫자들이 코드에 그대로 노출되지 않도록) 데이터는 난독화된 문자열 조각으로만 보관
-    // 난독화 코드 규칙 :
-    // 짝수번째 문자 : 짝수번째 문자를 바로 앞 문자로 이동시켜 놓음
-    // 홀수번째 문자 : 맨 뒤에 있는 문자를 맨 앞으로 보내고, 짝수번째 문자를 바로 앞 문자로 이동시켜 놓음
-    /* const P = [
-      "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",
-      "==ug6FUKAQFBFrOYwLpK4rQKOozdTM1ieT9PNkSgGuctX6PhlT9fEFSO",
-    ]; */
-
-    const P = [
-      "cyZSSO8z/gzLLYhkNX2ciad1oBGOR5RfEzeWpsrKHb2nxiXtI2wl/bKBovahq718pNhCss9ijF9t7OBnRrrPbseGAE1bK6XyvIyrbqLjdEF/8",
-      "GB0qb2H7/MtTbow9oQYJ0lxuZ+nI5nVjcuLCdiBIrvvLbz7+TFZGlRwsKf0sjq0o1Y8ndU4VRGZFmq3FudQwdgqxCXNpXHKx82gfsaUtgveCMpYrF2wipD/ynGqfHpRNgX52hprAyK7JuIt8zAxSJ/CJxl1+RbV",
-      "Qh35BwU8ufL2V79uJYk7FWY7LUFk+tsMWCzmPka/B+lfBgSnRPgnCPBKII1YPwda/4kTmg/kKra",
-      "knMFMVqM42F87XV835taHT6w8edpX3od3zKGDb3rYqhX2KyiTcuFYtP87Fc0goabSfgUxz0jIm3wWlnyc0vKYI1qdyogNvwl2PNix",
-      "TayvZcSRIodeAr3uTma8",
-      "BHUUfgK55Loe7yOewqjOzH8tN4Ud7ovcBjLPK+8hklcpMa4CSGdQM6rszLuxukAklyk5DsRUxQ+MH1MABjbeFgoxUDxchog4kPUbn1uVmNIQO9FXGX77N87jDAqDaeIZWhaJlqtSRMK5OP16vyppHoytmPf0tz+8wYNWdSN9Xht/hc",
-      "Kmg1L4zg33RC/u0zzIP1Fifm9QiFL6AcmVuON8jeEr5dNxeIuKZ1bOznzvQKM3/uA6YeFSOEId0J6LtrMOZ60c9V+ih9APd1IS6exHbxGwrT1h1qENygk28d9R",
-      "MGdCIwNy2F9VoS2wtDnaXvVfgv54J9WRmHkxkjmUtJDbvjo7TuiiBzEi6nBvkcumonWZiiwhw4nCU87fLsn3+y6EVWSXW5s9lXRWEqNF17AlnPox+RnZ2mXqp59e9fxV5p",
-      "SComC032oXFVnMSlaoAan9xX4eXDmpxLBSYh",
-      "LmPlKAObuckYxXJsrEcWEJFMJEgIlf+OWuo6mgZzR3Og/i2bFTCgMUcN8mxCPX6",
-      "645VPkViqkzul9auXrqgoI+r6hb7Chydryz1LSibieYP01cryt/4NSjgrqLbJICD20m8CD84Mj7T/TQCA5P+KOgcSfh+Q4aZVK6IHFTSrMCjf94EdKk/Fwp+7bU1x0jZDyigC/8am8xIv4d5+cq8nrzT",
-      "40yWqQqc5rmvbUjvEhcTyTEh0Idu9LCOe+vGDouLrOVp2Luv3LVLr6RxFkCp3evsMqcxty9vM8EgP9LONKW63RrF//",
-      "7Bjf+WEEQPhpgkLBr4TtWh90IcTiteX8xC3VZZS+aj8erXO7jNHcs4Ypzp7R3iIixmUdm0d97N7PqTsGFg6vNC6zNGIIsRMIZ3m9Cn0W+cXUfqVy8pX4jcMPrhOhJ+pQvIn3jyy1BC7ax89NLnpU5sCMddC5f528Cm",
-      "==AvZmLRT0QBplJIFwXpdz60u+s2YfyyCWP79VwJl+acegQMXde9YsuV285ZFAsVDczw/B+pzci8aouvZb7/vpqXGFpXWQhu1Bg2Yod2+sLdXOxU6OStNtXLEeYfNWNiWd0ctJ1R5Q8xlBu6qMS/dHR7X532apTHxJyvLCMFfDSfchnaCgBe3eNo89n+LsHixTxQehK69XoBGVV0qvnSnLlkKveojrKC7AMI2IWGLSidIkx5WyX2CdC+Wg4e/sMAU5woF4mSJoqTSrM/PU/QpFM52PP3pMZRxiTtX7QImJgYkOOp6iEPgXA4lSlNAwmOcVlARZN5hJjIVQF9+oAiv4hFLg7O35lQ2n+/LRUBDnzZk3LKNai1zi+bEiD5coepgJSHwc2hWtJHW9SzGog3I5iE7Zg0PfIPaFP5/07St3SwE+/kWFQyJSUeZZ0n+ceTbRxBnzPkNelydNf0leH/WvzuuP+42rWCk0mNYPWOoZ5oRB/GvfndtFpscfkIZFYH3K5iBkcX0aR44gwNw/dfdt2lhnX2U0LagoMMYs0dtBvAhCK5EInJiVGgyAUeaqWo9mzZ4b+wBnAtY+1OokVeXygwEvD/4gOCL4zr12EM3RD9x+YAt6k/U10ZSiD1TlsoNwhJ/bF7FojflH/kkg3SPN9Ri8sCyIRzhmJeHr5DnC5P/DclDCBcT/7d4+f5Hygr6HVyx5ZxFfDTGInAlwvadd98gXXht3sOYuD0qlD"
-    ];
-
-    // 짝수길이 문자열 : 짝수번째 문자를 바로 앞 문자로 이동
-    // 홀수길이 문자열 : 맨 앞에 있는 문자를 맨뒤로 보내고, 짝수번째 문자를 바로 앞 문자로 이동
-    const swapPairs = (str) => {
-      const arr = [...str];
-      for (let i = 0; i + 1 < arr.length; i += 2) {
-        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
-      }
-      return arr.join("");
-    };
-    const swap = (str) => {
-      if (str.length % 2 === 1) {
-        // 홀수: 맨 앞글자를 맨 뒤로
-        str = str.slice(1) + str[0];
-      }
-      // 짝수/홀수 공통: pair swap (fn1의 역연산)
-      return swapPairs(str);
-    };
-
-    const B64 = (() => {
-      // 홀수 인덱스 조각은 뒤집어서 저장되어 있으므로 여기서 다시 뒤집어 복원
-      let s = "";
-      for (let i = 0; i < P.length; i++) {
-        const t = P[i];
-        // const t = swap(P[i]);
-        s += (i & 1) ? t.split("").reverse().join("") : t;
-      }
-      return s;
-    })();
-
-    const b64ToU8 = (s) => {
-      s = String(s).replace(/[^A-Za-z0-9+/=]/g, "");
-      if (typeof atob === "function") {
-        const bin = atob(s);
-        const u8 = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i) & 255;
-        return u8;
-      }
-      // Node.js fallback
-      return Uint8Array.from(Buffer.from(s, "base64"));
-    };
-
-    const xs32 = (seed) => {
-      let x = seed >>> 0;
-      return () => {
-        x ^= (x << 13) >>> 0;
-        x ^= x >>> 17;
-        x ^= (x << 5) >>> 0;
-        return (x >>> 0);
-      };
-    };
-
-    const decryptInPlace = (u8) => {
-      const next = xs32(0xa5f1523d);
-      for (let i = 0; i < u8.length; i++) {
-        const r = next();
-        const k = ((r ^ Math.imul(i, 0x9e3779b9)) >>> ((i & 3) << 3)) & 255;
-        u8[i] ^= k;
-      }
-      return u8;
-    };
-
-    const raw = decryptInPlace(b64ToU8(B64));
-    const dv = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
-
-    const mix = (x) => {
-      x |= 0;
-      x ^= x >>> 16;
-      x = Math.imul(x, 0x7feb352d);
-      x ^= x >>> 15;
-      x = Math.imul(x, 0x846ca68b);
-      x ^= x >>> 16;
-      return x >>> 0;
-    };
-
-    const REC = 16;
-
-    return (tri) => {
-      const a = ((tri && tri[0]) ?? 0) | 0;
-      const b = ((tri && tri[1]) ?? 0) | 0;
-      const c = ((tri && tri[2]) ?? 0) | 0;
-
-      // 의미 없는 태그(복잡도 증가용)
-      const tag = mix(a ^ (b << 11) ^ (c << 22));
-
-      for (let off = 0; off < raw.byteLength; off += REC) {
-        const ra = dv.getUint16(off, true);
-        const rb = dv.getUint16(off + 2, true);
-        const rc = dv.getUint16(off + 4, true);
-
-        if (((ra ^ a) | (rb ^ b) | (rc ^ c)) === 0) {
-          // "배열을 직접 리턴": 중간 리스트 만들지 않고 바로 반환
-          return Array.from({ length: 10 }, (_, i) => raw[off + 6 + i] ^ ((tag >>> ((i & 3) << 3)) & 0));
-        }
-      }
-
-      throw new Error("지원하지 않는 입력입니다.");
-    };
-  })();
-
-  const r = weirdDecode([1608,1563,711]);
-  console.log(r);
-};
-wd();
-
-
+createP();
 
 // console.clear();
 
@@ -651,18 +484,22 @@ function createP2() {
       [72, 74, 90, 85, 84, 79, 88, 70, 81, 65],
       [74, 82, 80, 70, 73, 71, 83, 66, 68, 78]
     ],
-    pieces: 14,
-    seed: 0xa5f1523d,
+    // pieces: 14,
+    pieces: Math.floor(Math.random() * (15 - 10 + 1)) + 10,
+    // seed: 0xa5f1523d,
+    seed: (Math.random() * 0x100000000) >>> 0,
     split: {
       mode: "random",
-      splitSeed: 0x12345678, // 이 값만 바꾸면 P '모양'이 바뀜(복호 결과는 동일)
+      // splitSeed: 0x12345678, // 이 값만 바꾸면 P '모양'이 바뀜(복호 결과는 동일)
+      splitSeed: (Math.random() * 0x100000000) >>> 0, // 이 값만 바꾸면 P '모양'이 바뀜(복호 결과는 동일)
       minPieceLen: 20,
       maxPieceLen: 180,
       minLastLen: 16,
     },
   });
 
-  console.log(JSON.stringify(P));
+  console.log(P);
+  // console.log(JSON.stringify(P));
 };
 // createP2();
 
@@ -672,7 +509,172 @@ function createP2() {
 // ———————————————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————————
 
+function wd() {
+  const weirdDecode = (() => {
+    /* const P = [
+      "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",
+      "==guF6KUQABFrFYOLwKpr4KQoOdzMTi1TeP9kNgSuGtc6XhPTlf9FEOS",
+    ]; */
 
+    // (입력/출력 숫자들이 코드에 그대로 노출되지 않도록) 데이터는 난독화된 문자열 조각으로만 보관
+    // 난독화 코드 규칙 :
+    // 짝수번째 문자 : 짝수번째 문자를 바로 앞 문자로 이동시켜 놓음
+    // 홀수번째 문자 : 맨 뒤에 있는 문자를 맨 앞으로 보내고, 짝수번째 문자를 바로 앞 문자로 이동시켜 놓음
+    /* const P = [
+      "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",
+      "==ug6FUKAQFBFrOYwLpK4rQKOozdTM1ieT9PNkSgGuctX6PhlT9fEFSO",
+    ]; */
+
+    const P = [
+      "cyZSSO8z/gzLLYhkNX2ciad1oBGOR5RfEzeWpsrKHb2nxiXtI2wl/bKBovahq718pNhCss9ijF9t7OBnRrrPbseGAE1bK6XyvIyrbqLjdEF/8",
+      "GB0qb2H7/MtTbow9oQYJ0lxuZ+nI5nVjcuLCdiBIrvvLbz7+TFZGlRwsKf0sjq0o1Y8ndU4VRGZFmq3FudQwdgqxCXNpXHKx82gfsaUtgveCMpYrF2wipD/ynGqfHpRNgX52hprAyK7JuIt8zAxSJ/CJxl1+RbV",
+      "Qh35BwU8ufL2V79uJYk7FWY7LUFk+tsMWCzmPka/B+lfBgSnRPgnCPBKII1YPwda/4kTmg/kKra",
+      "knMFMVqM42F87XV835taHT6w8edpX3od3zKGDb3rYqhX2KyiTcuFYtP87Fc0goabSfgUxz0jIm3wWlnyc0vKYI1qdyogNvwl2PNix",
+      "TayvZcSRIodeAr3uTma8",
+      "BHUUfgK55Loe7yOewqjOzH8tN4Ud7ovcBjLPK+8hklcpMa4CSGdQM6rszLuxukAklyk5DsRUxQ+MH1MABjbeFgoxUDxchog4kPUbn1uVmNIQO9FXGX77N87jDAqDaeIZWhaJlqtSRMK5OP16vyppHoytmPf0tz+8wYNWdSN9Xht/hc",
+      "Kmg1L4zg33RC/u0zzIP1Fifm9QiFL6AcmVuON8jeEr5dNxeIuKZ1bOznzvQKM3/uA6YeFSOEId0J6LtrMOZ60c9V+ih9APd1IS6exHbxGwrT1h1qENygk28d9R",
+      "MGdCIwNy2F9VoS2wtDnaXvVfgv54J9WRmHkxkjmUtJDbvjo7TuiiBzEi6nBvkcumonWZiiwhw4nCU87fLsn3+y6EVWSXW5s9lXRWEqNF17AlnPox+RnZ2mXqp59e9fxV5p",
+      "SComC032oXFVnMSlaoAan9xX4eXDmpxLBSYh",
+      "LmPlKAObuckYxXJsrEcWEJFMJEgIlf+OWuo6mgZzR3Og/i2bFTCgMUcN8mxCPX6",
+      "645VPkViqkzul9auXrqgoI+r6hb7Chydryz1LSibieYP01cryt/4NSjgrqLbJICD20m8CD84Mj7T/TQCA5P+KOgcSfh+Q4aZVK6IHFTSrMCjf94EdKk/Fwp+7bU1x0jZDyigC/8am8xIv4d5+cq8nrzT",
+      "40yWqQqc5rmvbUjvEhcTyTEh0Idu9LCOe+vGDouLrOVp2Luv3LVLr6RxFkCp3evsMqcxty9vM8EgP9LONKW63RrF//",
+      "7Bjf+WEEQPhpgkLBr4TtWh90IcTiteX8xC3VZZS+aj8erXO7jNHcs4Ypzp7R3iIixmUdm0d97N7PqTsGFg6vNC6zNGIIsRMIZ3m9Cn0W+cXUfqVy8pX4jcMPrhOhJ+pQvIn3jyy1BC7ax89NLnpU5sCMddC5f528Cm",
+      "==AvZmLRT0QBplJIFwXpdz60u+s2YfyyCWP79VwJl+acegQMXde9YsuV285ZFAsVDczw/B+pzci8aouvZb7/vpqXGFpXWQhu1Bg2Yod2+sLdXOxU6OStNtXLEeYfNWNiWd0ctJ1R5Q8xlBu6qMS/dHR7X532apTHxJyvLCMFfDSfchnaCgBe3eNo89n+LsHixTxQehK69XoBGVV0qvnSnLlkKveojrKC7AMI2IWGLSidIkx5WyX2CdC+Wg4e/sMAU5woF4mSJoqTSrM/PU/QpFM52PP3pMZRxiTtX7QImJgYkOOp6iEPgXA4lSlNAwmOcVlARZN5hJjIVQF9+oAiv4hFLg7O35lQ2n+/LRUBDnzZk3LKNai1zi+bEiD5coepgJSHwc2hWtJHW9SzGog3I5iE7Zg0PfIPaFP5/07St3SwE+/kWFQyJSUeZZ0n+ceTbRxBnzPkNelydNf0leH/WvzuuP+42rWCk0mNYPWOoZ5oRB/GvfndtFpscfkIZFYH3K5iBkcX0aR44gwNw/dfdt2lhnX2U0LagoMMYs0dtBvAhCK5EInJiVGgyAUeaqWo9mzZ4b+wBnAtY+1OokVeXygwEvD/4gOCL4zr12EM3RD9x+YAt6k/U10ZSiD1TlsoNwhJ/bF7FojflH/kkg3SPN9Ri8sCyIRzhmJeHr5DnC5P/DclDCBcT/7d4+f5Hygr6HVyx5ZxFfDTGInAlwvadd98gXXht3sOYuD0qlD"
+    ];
+
+    // 짝수길이 문자열 : 짝수번째 문자를 바로 앞 문자로 이동
+    // 홀수길이 문자열 : 맨 앞에 있는 문자를 맨뒤로 보내고, 짝수번째 문자를 바로 앞 문자로 이동
+    const swapPairs = (str) => {
+      const arr = [...str];
+      for (let i = 0; i + 1 < arr.length; i += 2) {
+        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+      }
+      return arr.join("");
+    };
+    const swap = (str) => {
+      if (str.length % 2 === 1) {
+        // 홀수: 맨 앞글자를 맨 뒤로
+        str = str.slice(1) + str[0];
+      }
+      // 짝수/홀수 공통: pair swap (fn1의 역연산)
+      return swapPairs(str);
+    };
+
+    const B64 = (() => {
+      // 홀수 인덱스 조각은 뒤집어서 저장되어 있으므로 여기서 다시 뒤집어 복원
+      let s = "";
+      for (let i = 0; i < P.length; i++) {
+        const t = P[i];
+        // const t = swap(P[i]);
+        s += (i & 1) ? t.split("").reverse().join("") : t;
+      }
+      return s;
+    })();
+
+    const b64ToU8 = (s) => {
+      s = String(s).replace(/[^A-Za-z0-9+/=]/g, "");
+      if (typeof atob === "function") {
+        const bin = atob(s);
+        const u8 = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i) & 255;
+        return u8;
+      }
+      // Node.js fallback
+      return Uint8Array.from(Buffer.from(s, "base64"));
+    };
+
+    const xs32 = (seed) => {
+      let x = seed >>> 0;
+      return () => {
+        x ^= (x << 13) >>> 0;
+        x ^= x >>> 17;
+        x ^= (x << 5) >>> 0;
+        return (x >>> 0);
+      };
+    };
+
+    const decryptInPlace = (u8) => {
+      const next = xs32(0xa5f1523d);
+      for (let i = 0; i < u8.length; i++) {
+        const r = next();
+        const k = ((r ^ Math.imul(i, 0x9e3779b9)) >>> ((i & 3) << 3)) & 255;
+        u8[i] ^= k;
+      }
+      return u8;
+    };
+
+    const raw = decryptInPlace(b64ToU8(B64));
+    const dv = new DataView(raw.buffer, raw.byteOffset, raw.byteLength);
+
+    const mix = (x) => {
+      x |= 0;
+      x ^= x >>> 16;
+      x = Math.imul(x, 0x7feb352d);
+      x ^= x >>> 15;
+      x = Math.imul(x, 0x846ca68b);
+      x ^= x >>> 16;
+      return x >>> 0;
+    };
+
+    const REC = 16;
+
+    return (tri) => {
+      const a = ((tri && tri[0]) ?? 0) | 0;
+      const b = ((tri && tri[1]) ?? 0) | 0;
+      const c = ((tri && tri[2]) ?? 0) | 0;
+
+      // 의미 없는 태그(복잡도 증가용)
+      const tag = mix(a ^ (b << 11) ^ (c << 22));
+
+      for (let off = 0; off < raw.byteLength; off += REC) {
+        const ra = dv.getUint16(off, true);
+        const rb = dv.getUint16(off + 2, true);
+        const rc = dv.getUint16(off + 4, true);
+
+        if (((ra ^ a) | (rb ^ b) | (rc ^ c)) === 0) {
+          // "배열을 직접 리턴": 중간 리스트 만들지 않고 바로 반환
+          return Array.from({ length: 10 }, (_, i) => raw[off + 6 + i] ^ ((tag >>> ((i & 3) << 3)) & 0));
+        }
+      }
+
+      throw new Error("지원하지 않는 입력입니다.");
+    };
+  })();
+
+  const r = weirdDecode([1608,1563,711]);
+  console.log(r);
+};
+// wd();
+
+// console.clear();
+
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
+// ———————————————————————————————————————————————————————————
 
 // console.clear();
 
