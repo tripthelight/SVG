@@ -3,4 +3,4 @@
 # pip install yt-dlp
 # pip install ffmpeg
 
-# yt-dlp -P "H:/dw/서울여대" -x "https://youtu.be/Ly1nU-dsmDw" --audio-format "mp3" --audio-quality 128k --sponsorblock-remove all
+# yt-dlp -P "Y:/dw/숙명여대" -x "https://youtu.be/1W2n45jU9ck" --audio-format "mp3" --audio-quality 128k --sponsorblock-remove all

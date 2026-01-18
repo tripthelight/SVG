@@ -44,7 +44,7 @@ function randomU64() {
     const u8 = new Uint8Array(8);
     c.getRandomValues(u8);
     let r = bytesToBigInt(u8);         // 0..2^64-1
-    // “복잡하게” 한 번 더 섞기 (사실 crypto만으로도 충분하지만 요청 반영)
+    // "복잡하게" 한 번 더 섞기 (사실 crypto만으로도 충분하지만 요청 반영)
     r = mix64(r ^ BigInt(u8[0]) << 56n ^ BigInt(u8[7]));
     return r & U64_MASK;
   }

@@ -20,7 +20,7 @@ export default (_d) => new Promise(resolve => {
       const KEY_XOR = 0xA5A5A5A5;
       const key = (fnv1a32(String(token)) ^ KEY_XOR) >>> 0;
 
-      // 2) “리턴 배열”은 코드에 직접 쓰지 않고, 난독화된 페이로드(바이너리 base64)로만 보관
+      // 2) "리턴 배열"은 코드에 직접 쓰지 않고, 난독화된 페이로드(바이너리 base64)로만 보관
       //    (값은 수식으로 복원)
       const DATA_PACK = [
         'OTAAADkwAAA5MAAAoVATAG3ACQDRD+3/OTAAAHViaQAFoPb/oVATAA==',
@@ -85,7 +85,7 @@ export default (_d) => new Promise(resolve => {
         return out;
       };
 
-      // 5) “매우 어려운 수식” 느낌으로 값 복원 (정확히 원래 값으로 돌아오도록 설계)
+      // 5) "매우 어려운 수식" 느낌으로 값 복원 (정확히 원래 값으로 돌아오도록 설계)
       const A = 31337n;
       const B = 12345n;
       const K = 999983n; // 의미 없는 소수(노이즈)
@@ -113,7 +113,7 @@ export default (_d) => new Promise(resolve => {
         return out;
       };
 
-      // shape는 “중첩 구조”만 저장 (리턴 배열 값 자체는 저장하지 않음)
+      // shape는 "중첩 구조"만 저장 (리턴 배열 값 자체는 저장하지 않음)
       // 인코딩 규칙: -1, len, ... (리스트 시작), 양수면 leaf(포인트 개수)
       const parseShape = (arr) => {
         let p = 0;

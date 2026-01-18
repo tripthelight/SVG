@@ -1,20 +1,32 @@
 // 1) 토큰 10개 (여기엔 평문이 들어가지만, 이 파일은 배포하지 않습니다)
 const TOKENS = [
-  "OEJNIHMKXT",
-  "GIZFNPTSVK",
-  "OCNLTGMFKS",
-  "DKHOXMIVEA",
-  "PDBIZUOFMJ",
-  "KFOUDBRZVI",
-  "MIPGSHDAUF",
-  "SJRWTDGUXH",
-  "HJZUTOXFQA",
-  "JRPFIGSBDN",
+  0x48ee2d2b,
+  0x41e53985,
+  0xfb021b70,
+  0x375bd7f0,
+  0x6256a4ab,
+  0x6618ef6,
+  0xcfa28535,
+  0x3c49949e,
+  0x64b72189,
+  0x722ed213,
 ];
 
 // #######################################################
 // SERVER CODE ———————————————————————————————————————————
 // #######################################################
+
+const fnv1a32 = (str, seed) => {
+  const bytes = new TextEncoder().encode(str);
+  // let h = 0x811c9dc5;
+  let h = seed;
+  for (let i = 0; i < bytes.length; i++) {
+    h ^= bytes[i];
+    // h = Math.imul(h, 0x01000193);
+    h = Math.imul(h, h >>> 1);
+  }
+  return h >>> 0;
+};
 
 // ———————————————————————————————————————————————————————
 // 난수 생성기
@@ -34,19 +46,44 @@ function uniqueRand32(n) {
 // number d - HASHES / PAYLOADS / SEEDS 생성
 // ———————————————————————————————————————————————————————
 
-const seeds = uniqueRand32(10);
-const items = [
-  {
-    token: TOKENS[0], 
-    data: [[0,0], [0,4], [2,-4], [0,22], [-2,4]], 
-    // seed: 0x0F1E2D3C,
-  },
-  {
-    token: TOKENS[1], 
-    data: [[0,0], [0,2], [4,-2], [14,0], [-14,24], [14,0], [-4,2], [-14,0], [14,-24]], 
-    // seed: 0xA1B2C3D4,
-  },
-].map((o, i) => ({...o, seed: seeds[i]})); // 모든 원소에 공통으로 seed 추가
+const dNumPos = [
+  [[0,0], [0,4], [2,-4], [0,22], [-2,4]],
+  [[0,0], [0,2], [4,-2], [14,0], [-14,24], [14,0], [-4,2], [-14,0], [14,-24]],
+  [ [ [0,0], [0,2], [4,-2], [14,0], [-12.4,12], [12.4,0], [-14.4,14], [-3.6,0], [12.4,-12], [-12.4,0], [12.4,-12] ], [ [0,0], [14.4,0], [3.6,0], [-12.4,12], [12.4,0], [-12.4,12], [12.4,0], [-4,2], [-14,0], [12.4,-12], [-12.4,0] ] ],
+  [ [[0,0], [0,14], [2,-4], [0,11], [14,-15], [0,-2], [2,-4], [0,22], [-2,4], [0,-17], [-16,17]], [[0,0], [0,4], [2,-4], [0,17], [16,-17], [0,12], [-2,4], [0,-11], [-14,15], [0,2], [-2,4]] ],
+  [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ],
+  [ [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ], [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ] ],
+  [ [ [0,0], [0,2], [4,-2], [14,0], [-15.5,26], [-2.5,0], [14,-24] ], [ [0,0], [15.5,0], [2.5,0], [-14,24], [14,0], [-4,2], [-14,0] ] ],
+  [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ],
+  [ [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ], [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ] ],
+  [ [ [ [0,0], [0,4], [2,-4], [0,22], [-2,4], [0,-22] ], [ [6,0], [2,-4], [10,0], [0,22], [-2,4], [-10,0], [2,-2], [7,0], [1,-2], [0,-20], [-7,0], [-1,2], [0,20], [-2,2] ] ], [ [ [0,0], [0,4], [2,-4], [10,0], [0,22], [-2,4], [-10,0], [2,-2], [7,0], [1,-2], [0,-20], [-7,0], [-1,2], [0,20], [-2,2], [0,-22] ], [ [16,0], [2,-4], [0,22], [-2,4], [0,-22] ] ] ],
+];
+const dNumberList = dNumPos.map((a, i) => ({
+  token: TOKENS[i],
+  data: a,
+}));
+
+const SEED = rand32(); // 공통 seed
+// card num 1 ~ 10 과 매칭되는 hash 생성
+// 0 ~ 9 번째 index가 1 ~ 10
+// 마지막 index가 seed
+// 나머지는 10개 카드 개수를 속이기 위한 fake
+const buildHeads = () => {
+  const n = Math.floor(Math.random() * (16 - 11 + 1)) + 11; // 11 ~ 16
+  const HASHES = [];
+  for (let i = 0; i < n; i++) {
+    const isLast = (i === n - 1); // 마지막
+    const isHead = i < 10; // 실제 head hash
+    if (isLast) {
+      HASHES.push(SEED);
+    } else if (isHead) {
+      HASHES.push(fnv1a32(TOKENS[i], SEED));
+    } else {
+      HASHES.push(rand32());
+    }
+  };
+  return { HASHES };
+};
 
 const OPEN = -32768;
 const CLOSE = 32767;
@@ -119,8 +156,37 @@ const buildPayload = (nestedArray, seed) => {
   return u8ToB64(u8);
 };
 
+const buildNumPayload = (heads) => {
+  const n = Math.floor(Math.random() * (13 - 10 + 1)) + 10; // 10 ~ 13
+  const n10 = Math.floor(Math.random() * 10); // 0 ~ 9
+  const N_PAYLOADS = [];
+  for (let i = 0; i < n; i++) {
+    if (i < 10) { // 실제 payload hash
+      N_PAYLOADS.push(buildPayload(dNumPos[i], heads[i])); // 난독화 문자열
+    } else {
+      N_PAYLOADS.push(buildPayload(dNumPos[n10], rand32()));
+    }
+  };
+  return { N_PAYLOADS };
+};
+
+// ❌ 사용 안함
+const buildNumList = () => {
+  const HASHES = [];
+  const PAYLOADS = [];
+  // const SEEDS = [];
+  for (let i = 0; i < dNumberList.length; i++) {
+    const { token, data } = dNumberList[i];
+    HASHES.push(fnv1a32(token, SEED)); // 런타임엔 이 숫자만 남김
+    PAYLOADS.push(buildPayload(data, SEED)); // 난독화 문자열
+    // SEEDS.push(seed >>> 0);
+  };
+  // return { HASHES, PAYLOADS, SEEDS };
+  return { HASHES, PAYLOADS };
+}
+
 // ———————————————————————————————————————————————————————
-// SHAPE_PAYLOADS, CASE_PAYLOADS 생성
+// T d - SHAPE_PAYLOADS, CASE_PAYLOADS 생성
 // ———————————————————————————————————————————————————————
 
 // ❌ TOKENS 와 매칭 안되어 사용 안함
@@ -385,7 +451,7 @@ function createTPayload() {
 };
 // createTPayload();
 
-// 🟢 TOKENS 와 매칭됨
+// ❌ TOKENS 와 매칭되지만 사용 안함
 function createTPayloads() {
   // fnv1a32 - Node 용
   /* const fnv1a32 = (str) => {
@@ -484,7 +550,7 @@ function createTPayloads() {
     return u8ToB64(u8);
   };
 
-  // ---------------- 여기부터 사용자가 채우는 “원본(빌드단 전용)” ----------------
+  // ---------------- 여기부터 사용자가 채우는 "원본(빌드단 전용)" ----------------
   // 2) shape 원본: d/dr/ds/drs (빌드단 전용이므로 평문 OK)
   const d = [ [0,0],[10,2],[20,0],[10,8],[-10,-2],[-6,0],[0,32],[-6,-8],[0,-24],[-10,0] ];
   const dr = [ [16,0],[6,8],[0,24],[10,0],[8,8],[-10,-2],[-20,0],[-10,-8],[10,2],[6,0] ];
@@ -559,7 +625,162 @@ function createTPayloads() {
   // console.log(`SHAPE_PAYLOADS = ${JSON.stringify(SHAPE_PAYLOADS, null, 2)}`);
   // console.log(`CASE_PAYLOADS = ${JSON.stringify(CASE_PAYLOADS, null, 2)}`);
 };
-createTPayloads();
+// createTPayloads();
+
+const createT = {
+  xorshift32: (x) => {
+    x >>>= 0;
+    x ^= (x << 13) >>> 0;
+    x ^= (x >>> 17) >>> 0;
+    x ^= (x << 5) >>> 0;
+    return x >>> 0;
+  },
+  cryptInPlace: (u8, seed) => {
+    let s = (seed ^ 0x9e3779b9) >>> 0;
+    let acc = 0x85ebca6b >>> 0;
+
+    for (let i = 0; i < u8.length; i++) {
+      s = xorshift32(s);
+      acc = Math.imul(acc ^ s, 0xc2b2ae35) >>> 0;
+      const m = (acc ^ (acc >>> 11) ^ (s >>> 19)) & 0xff;
+      u8[i] ^= m;
+    }
+    return u8;
+  },
+  int16ToU8: (arr) => {
+    const buf = new ArrayBuffer(arr.length * 2);
+    const dv = new DataView(buf);
+    for (let i = 0; i < arr.length; i++) {
+      dv.setInt16(i * 2, arr[i], true); // true = little-endian
+    }
+    return new Uint8Array(buf);
+  },
+  u8ToB64: (u8) => {
+    const CHUNK = 0x8000;
+    let bin = "";
+    for (let i = 0; i < u8.length; i += CHUNK) {
+      const slice = u8.subarray(i, i + CHUNK);
+      bin += String.fromCharCode.apply(null, slice);
+    }
+    return btoa(bin);
+  },
+};
+function createTShape(heads) {
+  const d = [ [0,0],[10,2],[20,0],[10,8],[-10,-2],[-6,0],[0,32],[-6,-8],[0,-24],[-10,0] ];
+  const dr = [ [16,0],[6,8],[0,24],[10,0],[8,8],[-10,-2],[-20,0],[-10,-8],[10,2],[6,0] ];
+  const ds = [ [0,0],[8,2],[19,0],[9,8],[-9,-2],[-5,0],[0,28],[-5,-8],[0,-20],[-8,0] ];
+  const drs = [ [14,0],[5,8],[0,20],[8,0],[9,8],[-8,-2],[-19,0],[-9,-8],[9,2],[5,0] ];
+  // 1) shapeId 매핑(고정): 0:d, 1:dr, 2:ds, 3:drs
+  const SHAPES = [d, dr, ds, drs];
+
+  // 2) CASE payload 생성 (mode + recs)
+  const buildShapePayload = (points, seed) => {
+    const tokens = [OPEN];
+    for (const [x, y] of points) tokens.push(x | 0, y | 0);
+    tokens.push(CLOSE);
+
+    const u8 = createT.int16ToU8(tokens);
+    createT.cryptInPlace(u8, seed >>> 0);
+    return createT.u8ToB64(u8);
+  };
+
+  const T_SHAPE_PAYLOADS = SHAPES.map((pts, i) => buildShapePayload(pts, heads[i]));
+  return { T_SHAPE_PAYLOADS };
+};
+function createTCasePayload(heads) {
+  // 1) 케이스 10개 정의(recs)
+  // recs: [ [anchorX, anchorY, shapeId], ... ]
+  const CASE_RECS = [
+    // 0: [ [75,128], ...d ] -> flat
+    { mode: 0, recs: [[75,128,0]] },
+
+    // 1: [ [ [75,68],d ], [ [75,188],dr ] ]
+    { mode: 1, recs: [[75,68,0],[75,188,1]] },
+
+    // 2:
+    { mode: 1, recs: [[75,61,0],[75,128,0],[75,195,1]] },
+
+    // 3:
+    { mode: 1, recs: [[35,61,0],[115,61,0],[35,195,1],[115,195,1]] },
+
+    // 4:
+    { mode: 1, recs: [[35,61,0],[115,61,0],[75,128,0],[35,195,1],[115,195,1]] },
+
+    // 5:
+    { mode: 1, recs: [[35,61,0],[115,61,0],[35,128,0],[115,128,0],[35,195,1],[115,195,1]] },
+
+    // 6:
+    { mode: 1, recs: [[35,61,0],[115,61,0],[75,95,0],[35,128,0],[115,128,0],[35,195,1],[115,195,1]] },
+
+    // 7: ds/drs
+    { mode: 1, recs: [[35,61,2],[115,61,2],[75,95,2],[35,128,2],[115,128,2],[75,161,3],[35,195,3],[115,195,3]] },
+
+    // 8:
+    { mode: 1, recs: [[35,61,2],[115,61,2],[35,108,2],[115,108,2],[75,128,2],[35,148,3],[115,148,3],[35,195,3],[115,195,3]] },
+
+    // 9:
+    { mode: 1, recs: [[35,61,2],[115,61,2],[75,88,2],[35,108,2],[115,108,2],[35,148,3],[115,148,3],[75,168,3],[35,195,3],[115,195,3]] },
+  ];
+
+  // 2) CASE payload 생성 (mode + recs) ----------------
+  const buildCasePayload = (mode, recs, seed) => {
+    // mode: 0(flat 1개), 1(nested 여러 개)
+    const tokens = [mode | 0, recs.length | 0];
+    for (const [ax, ay, sid] of recs) tokens.push(ax | 0, ay | 0, sid | 0);
+
+    const u8 = createT.int16ToU8(tokens);
+    createT.cryptInPlace(u8, seed >>> 0);
+    return createT.u8ToB64(u8);
+  };
+
+  const T_CASE_PAYLOADS = CASE_RECS.map((c, i) => buildCasePayload(c.mode, c.recs, heads[i]));
+  return { T_CASE_PAYLOADS };
+}
+
+// ———————————————————————————————————————————————————————
+// NUMBER d, T d - payload merge
+// ———————————————————————————————————————————————————————
+function mergePayload() {
+  // const {
+  //   HASHES: NUM_HASHES,
+  //   PAYLOADS,
+  //   // SEEDS
+  // } = buildNumList();
+  // const {
+  //   HASHES: T_HASHES,
+  //   SHAPE_PAYLOADS,
+  //   SHAPE_SEEDS,
+  //   CASE_PAYLOADS,
+  //   CASE_SEEDS
+  // } = createTPayloads();
+
+  const { HASHES } = buildHeads();
+  const { N_PAYLOADS } = buildNumPayload(HASHES);
+  const { T_SHAPE_PAYLOADS } = createTShape(HASHES);
+  const { T_CASE_PAYLOADS } = createTCasePayload(HASHES);
+
+  // console.log("seed : ", SEED);
+  // console.log("seed : ", HASHES[HASHES.length - 1]);
+  console.log("hash : ", HASHES);
+  console.log("number payload : ", JSON.stringify(N_PAYLOADS));
+  console.log("T shape payload : ", JSON.stringify(T_SHAPE_PAYLOADS));
+  console.log("T case payload : ", JSON.stringify(T_CASE_PAYLOADS));
+
+  // console.log(NUM_HASHES);
+  // console.log(PAYLOADS);
+  // console.log(SEED);
+  // console.log("");
+  // console.log("");
+  // console.log("");
+  // console.log(T_HASHES);
+  // console.log(SHAPE_PAYLOADS);
+  // console.log(SHAPE_SEEDS);
+  // console.log(CASE_PAYLOADS);
+  // console.log(CASE_SEEDS);
+  
+};
+mergePayload();
+
 
 
 
@@ -568,10 +789,10 @@ createTPayloads();
 // #######################################################
 // CLIENT CODE ———————————————————————————————————————————
 // #######################################################
-const CARD_CODE = TOKENS[0];
+const PARAMS_CARD_CODE = TOKENS[0];
 
 // ———————————————————————————————————————————————————————
-// NUMBER ————————————————————————————————————————————————
+// MAKE NUMBER ———————————————————————————————————————————
 // [OEJNIHMKXT, GIZFNPTSVK, OCNLTGMFKS, DKHOXMIVEA, PDBIZUOFMJ, KFOUDBRZVI, MIPGSHDAUF, SJRWTDGUXH, HJZUTOXFQA, JRPFIGSBDN] 중 하나를 받아서, 해당하는 카드 숫자 d 의 배열을 리턴
 // ———————————————————————————————————————————————————————
 
@@ -580,6 +801,11 @@ const CARD_CODE = TOKENS[0];
 // - 복호/파싱은 입력 문자열 내용과 무관 (선택만 분기)
 
 const dNumber = (_token) => {
+  const { HASHES, PAYLOADS, SEEDS } = buildNumList(); // server에서 받음
+  // console.log(HASHES);
+  // console.log(PAYLOADS);
+  // console.log(SEEDS);
+
   // ---------- 32-bit FNV-1a (UTF-8) ----------
   const fnv1a32 = (str) => {
     const bytes = new TextEncoder().encode(str);
@@ -675,17 +901,6 @@ const dNumber = (_token) => {
     return root[0];
   };
 
-  // HASHES / PAYLOADS / SEEDS 는 server에서 내려주는 값 사용 필요
-  const HASHES = [];
-  const PAYLOADS = [];
-  const SEEDS = [];
-  for (let i = 0; i < items.length; i++) {
-    const { token, data, seed } = items[i];
-    HASHES.push(fnv1a32(token));        // 런타임엔 이 숫자만 남김
-    PAYLOADS.push(buildPayload(data, seed)); // 난독화 문자열
-    SEEDS.push(seed >>> 0);
-  };
-
   // ---------- 암호화된 payload들 (좌표배열을 직접 쓰지 않기 위한 데이터 덩어리) ----------
   /* const PAYLOADS = [
     "gqXv9TPOu5FNiWbSZCEQOxo/3nn6b+Ej",
@@ -728,6 +943,7 @@ const dNumber = (_token) => {
   const result = (token) => {
     const h = fnv1a32(String(token));
     for (let i = 0; i < HASHES.length; i++) {
+      if (i >= 10) break;
       if (HASHES[i] === h) return buildByIndex(i);
     }
   }
@@ -736,17 +952,25 @@ const dNumber = (_token) => {
 };
 
 // ✅ 사용 예시
-const arr = dNumber(CARD_CODE);
-console.log(arr);
+// const arr = dNumber(PARAMS_CARD_CODE);
+// console.log(arr);
 
 // ———————————————————————————————————————————————————————
-// T —————————————————————————————————————————————————————
+// MAKE T ————————————————————————————————————————————————
 // [OEJNIHMKXT, GIZFNPTSVK, OCNLTGMFKS, DKHOXMIVEA, PDBIZUOFMJ, KFOUDBRZVI, MIPGSHDAUF, SJRWTDGUXH, HJZUTOXFQA, JRPFIGSBDN] 중 하나를 받아서, 해당하는 카드 T d 의 배열을 리턴
 // ———————————————————————————————————————————————————————
 
 const dT = (_token) => {
-  const { HASHES, SHAPE_PAYLOADS, SHAPE_SEEDS, CASE_PAYLOADS, CASE_SEEDS } = createTPayloads();
-
+  const { HASHES, SHAPE_PAYLOADS, SHAPE_SEEDS, CASE_PAYLOADS, CASE_SEEDS } = createTPayloads(); // server에서 받음
+  // console.log(" ");
+  // console.log(" ");
+  // console.log(" ");
+  // console.log(HASHES);
+  // console.log(SHAPE_PAYLOADS);
+  // console.log(SHAPE_SEEDS);
+  // console.log(CASE_PAYLOADS);
+  // console.log(CASE_SEEDS);
+  
   // --------- hash: FNV-1a 32bit (UTF-8) ---------
   const fnv1a32 = (str) => {
     const bytes = new TextEncoder().encode(String(str));
@@ -957,6 +1181,6 @@ const dT = (_token) => {
   return result(_token);
 };
 
-const r = dT(CARD_CODE);
-console.log(r);
+// const r = dT(PARAMS_CARD_CODE);
+// console.log(r);
 
