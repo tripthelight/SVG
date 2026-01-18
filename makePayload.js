@@ -25,19 +25,6 @@ const TOKENS = [
 // SERVER CODE ———————————————————————————————————————————
 // #######################################################
 
-const dNumPos = [
-  [[0,0], [0,4], [2,-4], [0,22], [-2,4]],
-  [[0,0], [0,2], [4,-2], [14,0], [-14,24], [14,0], [-4,2], [-14,0], [14,-24]],
-  [ [ [0,0], [0,2], [4,-2], [14,0], [-12.4,12], [12.4,0], [-14.4,14], [-3.6,0], [12.4,-12], [-12.4,0], [12.4,-12] ], [ [0,0], [14.4,0], [3.6,0], [-12.4,12], [12.4,0], [-12.4,12], [12.4,0], [-4,2], [-14,0], [12.4,-12], [-12.4,0] ] ],
-  [ [[0,0], [0,14], [2,-4], [0,11], [14,-15], [0,-2], [2,-4], [0,22], [-2,4], [0,-17], [-16,17]], [[0,0], [0,4], [2,-4], [0,17], [16,-17], [0,12], [-2,4], [0,-11], [-14,15], [0,2], [-2,4]] ],
-  [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ],
-  [ [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ], [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ] ],
-  [ [ [0,0], [0,2], [4,-2], [14,0], [-15.5,26], [-2.5,0], [14,-24] ], [ [0,0], [15.5,0], [2.5,0], [-14,24], [14,0], [-4,2], [-14,0] ] ],
-  [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ],
-  [ [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ], [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ] ],
-  [ [ [ [0,0], [0,4], [2,-4], [0,22], [-2,4], [0,-22] ], [ [6,0], [2,-4], [10,0], [0,22], [-2,4], [-10,0], [2,-2], [7,0], [1,-2], [0,-20], [-7,0], [-1,2], [0,20], [-2,2] ] ], [ [ [0,0], [0,4], [2,-4], [10,0], [0,22], [-2,4], [-10,0], [2,-2], [7,0], [1,-2], [0,-20], [-7,0], [-1,2], [0,20], [-2,2], [0,-22] ], [ [16,0], [2,-4], [0,22], [-2,4], [0,-22] ] ] ],
-];
-
 // ———————————————————————————————————————————————————————
 // SEED, HASH 생성
 // ———————————————————————————————————————————————————————
@@ -77,6 +64,19 @@ const buildHashs = () => {
 // number d - PAYLOADS 생성
 // "A–Z a–z 0–9 + /" 그리고 "=" 문자만 사용해서 payload 생성됨
 // ———————————————————————————————————————————————————————
+const dNumPos = [
+  [[0,0], [0,4], [2,-4], [0,22], [-2,4]],
+  [[0,0], [0,2], [4,-2], [14,0], [-14,24], [14,0], [-4,2], [-14,0], [14,-24]],
+  [ [ [0,0], [0,2], [4,-2], [14,0], [-12.4,12], [12.4,0], [-14.4,14], [-3.6,0], [12.4,-12], [-12.4,0], [12.4,-12] ], [ [0,0], [14.4,0], [3.6,0], [-12.4,12], [12.4,0], [-12.4,12], [12.4,0], [-4,2], [-14,0], [12.4,-12], [-12.4,0] ] ],
+  [ [[0,0], [0,14], [2,-4], [0,11], [14,-15], [0,-2], [2,-4], [0,22], [-2,4], [0,-17], [-16,17]], [[0,0], [0,4], [2,-4], [0,17], [16,-17], [0,12], [-2,4], [0,-11], [-14,15], [0,2], [-2,4]] ],
+  [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ],
+  [ [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ], [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ] ],
+  [ [ [0,0], [0,2], [4,-2], [14,0], [-15.5,26], [-2.5,0], [14,-24] ], [ [0,0], [15.5,0], [2.5,0], [-14,24], [14,0], [-4,2], [-14,0] ] ],
+  [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ],
+  [ [ [0,0], [0,8], [8,-8], [10,0], [0,2.8], [-2,2], [0,-2.8], [-7.5,0], [-6.5,6.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-2.5,0], [8.5,-8.5], [0,-10.3], [-16,16] ], [ [0,0], [0,8], [8,-8], [2.5,0], [-8.5,8.5], [0,10.3], [16,-16], [0,15.2], [-8,8], [-10,0], [0,-2.8], [2,-2], [0,2.8], [7.5,0], [6.5,-6.5], [0,-10.3], [-16,16] ] ],
+  [ [ [ [0,0], [0,4], [2,-4], [0,22], [-2,4], [0,-22] ], [ [6,0], [2,-4], [10,0], [0,22], [-2,4], [-10,0], [2,-2], [7,0], [1,-2], [0,-20], [-7,0], [-1,2], [0,20], [-2,2] ] ], [ [ [0,0], [0,4], [2,-4], [10,0], [0,22], [-2,4], [-10,0], [2,-2], [7,0], [1,-2], [0,-20], [-7,0], [-1,2], [0,20], [-2,2], [0,-22] ], [ [16,0], [2,-4], [0,22], [-2,4], [0,-22] ] ] ],
+];
+
 // 최종: 원본 배열 + seed -> PAYLOAD 문자열
 const buildPayload = (nestedArray, seed) => {
   const tokens = toTokenStream(nestedArray);
@@ -126,7 +126,8 @@ function createTShape(heads) {
   };
 
   const T_SHAPE_PAYLOADS = SHAPES.map((pts, i) => buildShapePayload(pts, heads[i]));
-  return { T_SHAPE_PAYLOADS };
+  const T_SHAPE_SEED = heads.slice(0, 4);
+  return { T_SHAPE_PAYLOADS, T_SHAPE_SEED };
 };
 function createTCasePayload(heads) {
   // 1) 케이스 10개 정의(recs)
@@ -184,7 +185,7 @@ function createTCasePayload(heads) {
 function mergePayload() {
   const { HASHES: HS } = buildHashs(); // card nums 와 매칭된 hash 배열의 마지막은 seed 임
   const { N_PAYLOADS: NP } = buildNumPayload(HS);
-  const { T_SHAPE_PAYLOADS: TSP } = createTShape(HS);
+  const { T_SHAPE_PAYLOADS: TSP, T_SHAPE_SEED } = createTShape(HS);
   const { T_CASE_PAYLOADS: TCP } = createTCasePayload(HS);
 
   const shuffleArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -199,27 +200,31 @@ function mergePayload() {
   // shuffle 된 순서대로 payload 정렬
   const shuffleStr = (arr) => pack(shuffled.map((n) => arr[n]));
 
-  const T_SHAPE_PAYLOADS = pack(TSP);
   const HASHES = [
     ...shuffled.map((n) => HS[n]), // 0~9 재배열
     ...HS.slice(10), // 10~끝 유지
   ];
   const N_PAYLOADS = shuffleStr(NP);
+  /* const T_SHAPE_PAYLOADS = pack(shuffled
+    .filter((n) => n >= 0 && n < TSP.length) // 여기서는 0~3만 남음 -> [0,1,3,2]
+    .map((n) => TSP[n])); */
+  const T_SHAPE_PAYLOADS = pack(TSP);
   const T_CASE_PAYLOADS = shuffleStr(TCP);
 
-  console.log("hash : ", HASHES);
-  console.log("number payload String : ", N_PAYLOADS);
-  console.log("T shape payload String : ", T_SHAPE_PAYLOADS);
-  console.log("T case payload String : ", T_CASE_PAYLOADS);
+  // console.log("hash : ", HASHES);
+  // console.log("number payload String : ", N_PAYLOADS);
+  // console.log("T shape payload String : ", T_SHAPE_PAYLOADS);
+  // console.log("T case payload String : ", T_CASE_PAYLOADS);
 
   return {
     HASHES,
     N_PAYLOADS,
+    T_SHAPE_SEED,
     T_SHAPE_PAYLOADS,
     T_CASE_PAYLOADS,
   };
 };
-mergePayload();
+// mergePayload();
 
 
 
@@ -236,7 +241,57 @@ import decryptInPlace from "./functions/decryptInPlace.js";
 // ———————————————————————————————————————————————————————
 // PARAMS ————————————————————————————————————————————————
 // ———————————————————————————————————————————————————————
-const PARAMS_CARD_CODE = TOKENS[1];
+const PARAMS_CARD_CODE = TOKENS[9];
+
+
+
+
+
+
+function dAdd(p, d) {
+  p.setAttribute("d", d
+    .trim() // 앞뒤 공백 제거
+    .replace(/\s+/g, ' ') // 모든 공백(줄바꿈 포함)을 한 칸으로;
+  );
+};
+const editPos = {
+  // 왼쪽 상단 숫자의 시작 M 변경
+  f: (d) => {
+    return d.replace(
+      /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+      `M${PARAMS_CARD_CODE === TOKENS[0] ? 10 + 8 : 10},${10}`
+    );
+  },
+  // 오른쪽 하단 숫자의 시작 M 변경
+  r: (d) => {
+    return d.replace(
+      /^M\s*-?\d+(\.\d+)?[, ]\s*-?\d+(\.\d+)?/,
+      `M${PARAMS_CARD_CODE === TOKENS[0] ? Math.floor(parseInt(encryptSize.card.w) - 10 - 8) : Math.floor(parseInt(encryptSize.card.w) - 10 - parseInt(encryptSize.num.w))},${parseInt(encryptSize.card.h) - 10 - parseInt(encryptSize.num.h)}`
+    );
+  },
+}
+
+const encryptSize = {
+  card: { w: 191, h: 297 }, // card size -> w: 191, h: 297
+  num: { w: 18, h: 26 }, // number size -> w: 18, h: 26
+  t: { w: 40, h: 40, ws: 36, hs: 36 }, // T size -> w: 40, h: 40, ws: 36, hs: 36
+};
+
+const DIV = document.createElement("div");
+DIV.setAttribute("id", "container");
+document.body.appendChild(DIV);
+const container = document.getElementById("container");
+
+const SVG_NS = "http://www.w3.org/2000/svg"; // "http://www.w3.org/2000/svg";
+const svg = document.createElementNS(SVG_NS, "svg");
+svg.setAttribute("width", encryptSize.card.w);
+svg.setAttribute("height", encryptSize.card.h);
+svg.setAttribute('viewBox', `0 0 ${encryptSize.card.w} ${encryptSize.card.h}`);
+
+
+
+
+
 
 // ———————————————————————————————————————————————————————
 // MAKE NUMBER ———————————————————————————————————————————
@@ -402,8 +457,31 @@ function toSvgPathsN(input) {
 
   throw new Error("지원하지 않는 입력 형태입니다.");
 };
-// const nr = toSvgPathsN(dNumber(PARAMS_CARD_CODE));
-// console.log("NUMBER : ", nr);
+const d_num = toSvgPathsN(dNumber(PARAMS_CARD_CODE));
+
+
+
+
+
+
+
+const pathNumber = {
+  f: document.createElementNS(SVG_NS, "path"),
+  r: document.createElementNS(SVG_NS, "path")
+};
+if (d_num.length === 1) {
+  dAdd(pathNumber.f, editPos.f(d_num[0]));
+  dAdd(pathNumber.r, editPos.r(d_num[0]));
+} else if (d_num.length === 2) {
+  dAdd(pathNumber.f, editPos.f(d_num[0]));
+  dAdd(pathNumber.r, editPos.r(d_num[1]));
+};
+svg.appendChild(pathNumber.f);
+svg.appendChild(pathNumber.r);
+
+
+
+
 
 // ———————————————————————————————————————————————————————
 // MAKE T ————————————————————————————————————————————————
@@ -411,7 +489,7 @@ function toSvgPathsN(input) {
 // ———————————————————————————————————————————————————————
 
 const dT = (_token) => {
-  const { HASHES, T_SHAPE_PAYLOADS: TSP, T_CASE_PAYLOADS: TCP } = mergePayload(); // server에서 받음
+  const { HASHES, T_SHAPE_SEED: TSS, T_SHAPE_PAYLOADS: TSP, T_CASE_PAYLOADS: TCP } = mergePayload(); // server에서 받음
   const T_SHAPE_PAYLOADS = unpack(TSP);
   const T_CASE_PAYLOADS = unpack(TCP);
   // HASHES 에서 카드번호 10개만 추축해서 payloads 와 key: value로 병합
@@ -479,16 +557,17 @@ const dT = (_token) => {
   };
 
   // --------- shape decode cache ---------
-  const shapeCache = new Array(4).fill(null);
+  // const shapeCache = new Array(4).fill(null);
   const getShape = (sid) => {
-    let v = shapeCache[sid];
-    if (v) return v;
+    // let v = shapeCache[sid];
+    // if (v) return v;
+    let v = null
 
     const u8 = b64ToU8(T_SHAPE_PAYLOADS[sid]);
-    decryptInPlace(u8, HASHES[sid]);
+    decryptInPlace(u8, TSS[sid]);
     v = parseNestedPoints(u8);
 
-    shapeCache[sid] = v;
+    // shapeCache[sid] = v;
     return v;
   };
 
@@ -508,6 +587,7 @@ const dT = (_token) => {
     let cached = null;
 
     const u8 = b64ToU8(CASE_PAYLOADS[hash]);
+
     decryptInPlace(u8, hash);
     const { mode, recs } = parseCaseTemplate(u8);
 
@@ -518,8 +598,12 @@ const dT = (_token) => {
     } else {
       // nested: [ [ [anchor], ...shape ], ... ]
       cached = new Array(recs.length);
+      
+
       for (let i = 0; i < recs.length; i++) {
         const [x, y, sid] = recs[i];
+
+        
         cached[i] = buildAnchored(x, y, getShape(sid));
       }
     }
@@ -532,8 +616,8 @@ const dT = (_token) => {
 };
 
 // ✅ 사용 예시
-// const tarr = dT(PARAMS_CARD_CODE);
-// console.log(tarr);
+const tarr = dT(PARAMS_CARD_CODE);
+console.log(tarr);
 
 /**
  * - 단일 폴리곤: [ [Mx,My], [dx,dy], [dx,dy], ... ]  => ["M... m... l... Z"]
@@ -575,7 +659,26 @@ function toSvgPathsT(input) {
   }
 
   throw new TypeError("입력 형식이 올바르지 않습니다.");
+};
+
+const nt = toSvgPathsT(dT(PARAMS_CARD_CODE));
+console.log("T : ", nt);
+
+
+
+
+
+
+
+for (let i = 0; i < nt.length; i++) {
+  const path = document.createElementNS(SVG_NS, "path");
+  dAdd(path, nt[i]);
+  svg.appendChild(path);
 }
 
-// const nt = toSvgPathsT(dT(PARAMS_CARD_CODE));
-// console.log("T : ", nt);
+
+
+
+
+
+container.appendChild(svg);
