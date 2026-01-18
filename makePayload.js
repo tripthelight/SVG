@@ -270,13 +270,11 @@ const editPos = {
     );
   },
 }
-
 const encryptSize = {
   card: { w: 191, h: 297 }, // card size -> w: 191, h: 297
   num: { w: 18, h: 26 }, // number size -> w: 18, h: 26
   t: { w: 40, h: 40, ws: 36, hs: 36 }, // T size -> w: 40, h: 40, ws: 36, hs: 36
 };
-
 const DIV = document.createElement("div");
 DIV.setAttribute("id", "container");
 document.body.appendChild(DIV);
