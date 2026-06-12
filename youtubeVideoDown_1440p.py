@@ -26,12 +26,13 @@ def download_youtube_video():
         os.makedirs(download_path, exist_ok=True)
 
         title = safe_filename(yt.title)
-        output_file_name = f"{title}_{video_quality}_video_only.mp4"
+        output_file_name = f"{title}_{video_quality}_HIGH_video_only.mp4"
         output_file_path = os.path.join(download_path, output_file_name)
 
         # ------------------------------------------------------------
-        # 1. 먼저 mp4 video-only 원본 스트림을 찾는다.
-        #    이게 있으면 가장 좋다. 변환 없이 그대로 다운로드한다.
+        # 1. 먼저 1440p mp4 video-only 원본 스트림을 찾는다.
+        #    이게 있으면 변환 없이 그대로 다운로드한다.
+        #    이 경우가 가장 좋다.
         # ------------------------------------------------------------
         mp4_video_stream = yt.streams.filter(
             res=video_quality,
@@ -48,12 +49,14 @@ def download_youtube_video():
 
             messagebox.showinfo(
                 "완료",
-                f"{yt.title}\n{video_quality} mp4 video-only 다운로드 완료!"
+                f"{yt.title}\n"
+                f"{video_quality} 원본 mp4 video-only 다운로드 완료!\n\n"
+                f"{output_file_path}"
             )
             return
 
         # ------------------------------------------------------------
-        # 2. mp4 1440p가 없으면, webm 포함해서 video-only 스트림을 찾는다.
+        # 2. mp4 원본이 없으면 webm 포함해서 1440p video-only 스트림을 찾는다.
         #    YouTube는 1440p를 webm으로만 제공하는 경우가 많다.
         # ------------------------------------------------------------
         video_stream = yt.streams.filter(
@@ -69,13 +72,28 @@ def download_youtube_video():
             )
             return
 
+        # 선택된 원본 스트림 확인용
+        print("===== 선택된 원본 스트림 =====")
+        print("title:", yt.title)
+        print("resolution:", video_stream.resolution)
+        print("subtype:", video_stream.subtype)
+        print("mime_type:", video_stream.mime_type)
+        print("fps:", video_stream.fps)
+        print("video_codec:", video_stream.video_codec)
+        print("filesize:", video_stream.filesize)
+
         # ------------------------------------------------------------
-        # 3. 여기까지 왔다는 건 mp4 원본은 없고,
-        #    webm 같은 다른 형식의 video-only 스트림만 있다는 뜻이다.
-        #    그러므로 ffmpeg로 mp4로 변환한다.
-        #    -an : audio 제거
-        #    libx264 : mp4 호환성이 좋은 H.264 코덱으로 변환
-        #    crf 18 : 고화질 설정
+        # 3. webm 같은 원본 video-only를 임시 폴더에 다운로드한 뒤
+        #    매우 고화질 mp4로 변환한다.
+        #
+        # -an              : 오디오 제거
+        # -c:v libx264     : mp4 호환성이 좋은 H.264로 변환
+        # -preset slow     : 느리지만 압축 효율 좋음
+        # -crf 10          : 매우 고화질, 대용량
+        # -pix_fmt yuv420p : 일반 플레이어 호환성 확보
+        #
+        # crf를 더 낮추면 더 커진다.
+        # 예: 8, 6, 4, 0
         # ------------------------------------------------------------
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_video_file = video_stream.download(
@@ -90,7 +108,8 @@ def download_youtube_video():
                 "-an",
                 "-c:v", "libx264",
                 "-preset", "slow",
-                "-crf", "18",
+                "-crf", "8",
+                "-pix_fmt", "yuv420p",
                 output_file_path
             ]
 
@@ -103,7 +122,9 @@ def download_youtube_video():
 
         messagebox.showinfo(
             "완료",
-            f"{yt.title}\n{video_quality} mp4 변환 완료!\n\n{output_file_path}"
+            f"{yt.title}\n"
+            f"{video_quality} 고화질 mp4 video-only 변환 완료!\n\n"
+            f"{output_file_path}"
         )
 
     except subprocess.CalledProcessError:
