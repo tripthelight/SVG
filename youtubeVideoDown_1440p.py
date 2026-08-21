@@ -21,7 +21,7 @@ def download_youtube_video():
         return
 
     try:
-        yt = YouTube(video_url)
+        yt = YouTube(video_url, 'WEB')
 
         os.makedirs(download_path, exist_ok=True)
 
